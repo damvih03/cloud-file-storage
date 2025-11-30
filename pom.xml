@@ -17,6 +17,13 @@
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
     </properties>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.0</version>
+        <relativePath />
+    </parent>
+
     <dependencies>
 
         <dependency>
