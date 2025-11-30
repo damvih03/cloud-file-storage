@@ -1,0 +1,36 @@
+name: "cloud-file-storage"
+
+services:
+  mysql:
+    image: mysql:8.4.7
+    container_name: cloud-file-storage-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: cloud-file-storage
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "${DB_USERNAME}", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - cloud-file-storage-data:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${BACKEND_PORT}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  cloud-file-storage-data:

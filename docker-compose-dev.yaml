@@ -1,0 +1,12 @@
+name: "cloud-file-storage"
+
+services:
+  mysql:
+    image: mysql:8.4.7
+    container_name: cloud-file-storage-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: cloud-file-storage
+    ports:
+      - "3306"
