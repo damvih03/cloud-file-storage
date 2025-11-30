@@ -1,4 +1,4 @@
-name: "cloud-file-storage"
+name: "cloud-file-storage-dev"
 
 services:
   mysql:
