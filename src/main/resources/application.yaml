@@ -1,6 +1,8 @@
 server:
   servlet:
     context-path: /api
+    session:
+      timeout: 1h
 
 spring:
   jpa:
