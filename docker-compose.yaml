@@ -6,10 +6,10 @@ services:
     container_name: cloud-file-storage-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: cloud-file-storage
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DB}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "${DB_USERNAME}", "-p${DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-u", "${SPRING_DATASOURCE_USERNAME}", "-p${SPRING_DATASOURCE_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,10 +22,6 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     restart: always
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${BACKEND_PORT}:8080"
     depends_on:
