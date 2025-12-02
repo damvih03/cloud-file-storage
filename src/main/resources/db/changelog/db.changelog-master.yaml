@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: changeset/20251202-create-users-table.sql
+      relativeToChangelogFile: true

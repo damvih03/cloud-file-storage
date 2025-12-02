@@ -5,6 +5,9 @@ server:
       timeout: 1h
 
 spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
