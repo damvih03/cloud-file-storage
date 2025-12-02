@@ -5,7 +5,6 @@ import com.damvih.dto.UserRegistrationRequestDto;
 import com.damvih.dto.UserLoginRequestDto;
 import com.damvih.service.AuthenticationService;
 import com.damvih.service.AuthenticationStateHandlerService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
