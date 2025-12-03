@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloud-file-storage
+    username: root
+    password: root
+  data:
+    redis:
+      password: root
+      port: 6379

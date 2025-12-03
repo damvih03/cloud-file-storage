@@ -9,12 +9,24 @@ services:
       MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       MYSQL_DATABASE: ${SPRING_DATASOURCE_DB}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "${SPRING_DATASOURCE_USERNAME}", "-p${SPRING_DATASOURCE_PASSWORD}"]
+      test: [ "CMD", "mysqladmin", "ping", "-u", "${SPRING_DATASOURCE_USERNAME}", "-p${SPRING_DATASOURCE_PASSWORD}" ]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
       - cloud-file-storage-data:/var/lib/mysql
+
+  redis:
+    image: redis:8.4.0-alpine
+    container_name: redis
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping | grep PONG" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis-data:/data
 
   backend:
     build:
@@ -22,11 +34,23 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     restart: always
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_DB: ${SPRING_DATASOURCE_DB}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     ports:
       - "${BACKEND_PORT}:8080"
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   cloud-file-storage-data:
+  redis-data:

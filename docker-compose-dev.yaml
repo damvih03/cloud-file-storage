@@ -9,4 +9,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       MYSQL_DATABASE: ${SPRING_DATASOURCE_DB}
     ports:
-      - "3306"
+      - "3306:3306"
+
+  redis:
+    image: redis:8.4.0-alpine
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--requirepass", "root"]
+    ports:
+      - "6379:6379"
