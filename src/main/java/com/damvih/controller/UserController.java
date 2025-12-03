@@ -1,8 +1,8 @@
 package com.damvih.controller;
 
 import com.damvih.dto.UserDto;
+import com.damvih.dto.UserResponseDto;
 import com.damvih.mapper.UserMapper;
-import com.damvih.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,9 +16,9 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping("/user/me")
-    public ResponseEntity<UserDto> get(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserDto userDto = userMapper.toDto(userDetails.getUser());
-        return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserResponseDto> get(@AuthenticationPrincipal UserDto userDto) {
+        UserResponseDto userResponseDto = userMapper.toResponseDto(userDto);
+        return ResponseEntity.ok(userResponseDto);
     }
 
 }

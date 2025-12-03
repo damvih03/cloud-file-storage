@@ -3,6 +3,8 @@ package com.damvih.controller;
 import com.damvih.dto.UserDto;
 import com.damvih.dto.UserRegistrationRequestDto;
 import com.damvih.dto.UserLoginRequestDto;
+import com.damvih.dto.UserResponseDto;
+import com.damvih.mapper.UserMapper;
 import com.damvih.service.AuthenticationService;
 import com.damvih.service.AuthenticationStateHandlerService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,23 +23,24 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final AuthenticationStateHandlerService authenticationStateHandlerService;
+    private final UserMapper userMapper;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserDto> signUp(@RequestBody @Valid UserRegistrationRequestDto userRegistrationRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<UserResponseDto> signUp(@RequestBody @Valid UserRegistrationRequestDto userRegistrationRequestDto, HttpServletRequest request, HttpServletResponse response) {
         UserDto userDto = authenticationStateHandlerService.onAuthenticated(
                 () -> authenticationService.signUp(userRegistrationRequestDto),
                 request, response
         );
-        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.toResponseDto(userDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<UserDto> signIn(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<UserResponseDto> signIn(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         UserDto userDto = authenticationStateHandlerService.onAuthenticated(
                 () -> authenticationService.signIn(userLoginRequestDto),
                 request, response
         );
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.toResponseDto(userDto), HttpStatus.OK);
     }
 
     @PostMapping("/sign-out")

@@ -23,8 +23,7 @@ public class AuthenticationStateHandlerService {
     public UserDto onAuthenticated(Supplier<Authentication> supplier, HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = supplier.get();
         perform(authentication, request, response);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userMapper.toDto(userDetails.getUser());
+        return (UserDto) authentication.getPrincipal();
     }
 
     protected void perform(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {

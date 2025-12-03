@@ -1,6 +1,7 @@
 package com.damvih.mapper;
 
 import com.damvih.dto.UserDto;
+import com.damvih.dto.UserResponseDto;
 import com.damvih.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -9,5 +10,6 @@ import org.mapstruct.MappingConstants.ComponentModel;
 public interface UserMapper {
 
     UserDto toDto(User user);
+    UserResponseDto toResponseDto(UserDto userDto);
 
 }
