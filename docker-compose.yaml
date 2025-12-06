@@ -28,6 +28,19 @@ services:
     volumes:
       - redis-data:/data
 
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    command: [ "server", "/data", "--console-address", ":9001" ]
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - minio-data:/data
+
   backend:
     build:
       context: .
@@ -43,6 +56,10 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
     ports:
       - "${BACKEND_PORT}:8080"
     depends_on:
@@ -50,7 +67,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      minio:
+        condition: service_healthy
 
 volumes:
   cloud-file-storage-data:
   redis-data:
+  minio-data:

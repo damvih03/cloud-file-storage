@@ -10,3 +10,10 @@ spring:
       port: ${REDIS_PORT}
   session:
     timeout: 1h
+
+minio:
+  client:
+    endpoint: ${MINIO_ENDPOINT}
+    user: ${MINIO_ROOT_USER}
+    password: ${MINIO_ROOT_PASSWORD}
+  bucket-name: ${MINIO_BUCKET_NAME}
