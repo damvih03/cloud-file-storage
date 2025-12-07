@@ -1,8 +1,6 @@
 package com.damvih.service;
 
 import com.damvih.dto.UserDto;
-import com.damvih.mapper.UserMapper;
-import com.damvih.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,8 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationStateHandlerService {
-
-    private final UserMapper userMapper;
 
     public UserDto onAuthenticated(Supplier<Authentication> supplier, HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = supplier.get();
