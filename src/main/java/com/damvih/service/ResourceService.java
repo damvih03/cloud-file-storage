@@ -26,8 +26,23 @@ public class ResourceService {
         return resourceMapper.toResponseDto(path, statObjectResponse);
     }
 
-    public boolean isExists(String path, UserDto userDto) {
+    public void delete(String path, UserDto userDto) {
         String fullPath = pathService.getFull(path, userDto);
+
+        if (!isExists(fullPath)) {
+            throw new ResourceNotFoundException(
+                    String.format("Resource not found: %s.", fullPath)
+            );
+        }
+
+        if (pathService.isDirectory(path)) {
+            minioRepository.removeObjects(fullPath);
+        } else {
+            minioRepository.removeObject(fullPath);
+        }
+    }
+
+    public boolean isExists(String fullPath) {
         return minioRepository.getObjectStat(fullPath).isPresent();
     }
 
