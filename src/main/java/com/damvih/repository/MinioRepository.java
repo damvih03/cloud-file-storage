@@ -62,7 +62,6 @@ public class MinioRepository {
             List<DeleteObject> objectsToDelete = new ArrayList<>();
             for (Result<Item> item : items) {
                 objectsToDelete.add(new DeleteObject(item.get().objectName()));
-                System.out.println("Добавлен для удаления: " + item.get().objectName());
             }
 
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(RemoveObjectsArgs.builder()
