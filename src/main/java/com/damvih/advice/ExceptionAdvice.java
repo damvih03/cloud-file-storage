@@ -17,7 +17,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDto handleDataIntegrityViolationException(UserAlreadyExistsException exception) {
-        return new ErrorResponseDto(exception.getMessage());
+        return new ErrorResponseDto("User already exists.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
