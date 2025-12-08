@@ -1,6 +1,8 @@
 package com.damvih.advice;
 
 import com.damvih.dto.ErrorResponseDto;
+import com.damvih.exception.InvalidPathException;
+import com.damvih.exception.ResourceNotFoundException;
 import com.damvih.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -28,6 +30,18 @@ public class ExceptionAdvice {
                 .orElse("Validation failed.");
 
         return new ErrorResponseDto(message);
+    }
+
+    @ExceptionHandler(InvalidPathException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleInvalidPathException(InvalidPathException exception) {
+        return new ErrorResponseDto("Invalid path.");
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto handleResourceNotFoundException(ResourceNotFoundException exception) {
+        return new ErrorResponseDto("Resource not found.");
     }
 
 }
