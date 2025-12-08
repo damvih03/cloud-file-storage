@@ -1,5 +1,6 @@
 package com.damvih.repository;
 
+import com.damvih.config.minio.MinioClientProperties;
 import com.damvih.exception.MinioOperationException;
 import io.minio.MinioClient;
 import io.minio.StatObjectArgs;
@@ -15,11 +16,12 @@ import java.util.Optional;
 public class MinioRepository {
 
     private final MinioClient minioClient;
+    private final MinioClientProperties minioClientProperties;
 
     public Optional<StatObjectResponse> getObjectStat(String key) {
         try {
             return Optional.of(minioClient.statObject(StatObjectArgs.builder()
-                    .bucket("user-files")
+                    .bucket(minioClientProperties.getBucketName())
                     .object(key)
                     .build()));
         } catch (ErrorResponseException exception) {

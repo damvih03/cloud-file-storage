@@ -14,5 +14,6 @@ public class MinioClientProperties {
     private String endpoint;
     private String user;
     private String password;
+    private String bucketName;
 
 }

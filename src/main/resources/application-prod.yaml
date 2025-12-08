@@ -16,4 +16,4 @@ minio:
     endpoint: ${MINIO_ENDPOINT}
     user: ${MINIO_ROOT_USER}
     password: ${MINIO_ROOT_PASSWORD}
-  bucket-name: ${MINIO_BUCKET_NAME}
+    bucket-name: ${MINIO_BUCKET_NAME}
