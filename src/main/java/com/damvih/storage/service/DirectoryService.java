@@ -1,6 +1,7 @@
 package com.damvih.storage.service;
 
 import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.repository.MinioRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class DirectoryService {
         String fullPath = pathService.getFull(path, userDto);
 
         if (resourceService.isExists(fullPath)) {
-            throw new RuntimeException("Directory already exists.");
+            throw new DirectoryAlreadyExistsException("Directory already exists.");
         }
 
         String parentPath = pathService.getParentPath(Arrays.asList(path.split("/")));
