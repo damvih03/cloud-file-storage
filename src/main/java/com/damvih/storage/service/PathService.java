@@ -28,15 +28,15 @@ public class PathService {
     }
 
     public String getFull(String path, UserDto userDto) {
-        return getRoot(userDto) + "/" + path;
+        return getUserRootDirectoryName(userDto) + path;
     }
 
     public boolean isDirectory(String path) {
         return path.endsWith("/");
     }
 
-    private String getRoot(UserDto userDto) {
-        return String.format("user-%s-files", userDto.getId());
+    public String getUserRootDirectoryName(UserDto userDto) {
+        return String.format("user-%s-files/", userDto.getId());
     }
 
 }
