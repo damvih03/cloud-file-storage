@@ -51,17 +51,8 @@ public class MinioRepository {
 
     public void removeObjects(String prefix) {
         try {
-            Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
-                    .bucket(minioClientProperties.getBucketName())
-                    .prefix(prefix)
-                    .recursive(true)
-                    .build()
-            );
-
-            List<DeleteObject> objectsToDelete = new ArrayList<>();
-            for (Result<Item> item : items) {
-                objectsToDelete.add(new DeleteObject(item.get().objectName()));
-            }
+            Iterable<Result<Item>> items = getObjects(prefix, true);
+            List<DeleteObject> objectsToDelete = createObjectsToDelete(extractItems(items));
 
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(RemoveObjectsArgs.builder()
                     .bucket(minioClientProperties.getBucketName())
@@ -75,6 +66,37 @@ public class MinioRepository {
         } catch (Exception exception) {
             throw new MinioOperationException(exception.getMessage());
         }
+    }
+
+    private Iterable<Result<Item>> getObjects(String prefix, boolean recursive) {
+        return minioClient.listObjects(ListObjectsArgs.builder()
+                .bucket(minioClientProperties.getBucketName())
+                .prefix(prefix)
+                .recursive(recursive)
+                .build()
+        );
+    }
+
+    private List<Item> extractItems(Iterable<Result<Item>> results) {
+        try {
+            List<Item> items = new ArrayList<>();
+            for (Result<Item> result : results) {
+                items.add(result.get());
+            }
+            return items;
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
+    }
+
+    private List<DeleteObject> createObjectsToDelete(List<Item> items) {
+        List<DeleteObject> objectsToDelete = new ArrayList<>();
+
+        for (Item item : items) {
+            objectsToDelete.add(new DeleteObject(item.objectName()));
+        }
+
+        return objectsToDelete;
     }
 
 }
