@@ -20,7 +20,7 @@ public class UserCreatedListener {
 
     @EventListener
     @Async
-    public void onUserCreatedEvent(UserCreatedEvent userCreatedEvent) {
+    public void perform(UserCreatedEvent userCreatedEvent) {
         UserDto userDto = userCreatedEvent.getUserDto();
         String rootDirectoryName = pathService.getUserRootDirectoryName(userDto);
         try {
