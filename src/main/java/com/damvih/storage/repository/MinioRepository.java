@@ -10,6 +10,8 @@ import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +65,23 @@ public class MinioRepository {
                 DeleteError error = result.get();
             }
 
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
+    }
+
+    public void createDirectory(String key) {
+        putObject(key, new ByteArrayInputStream(new byte[]{}), 0L);
+    }
+
+    private void putObject(String key, InputStream stream, Long size) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(minioClientProperties.getBucketName())
+                    .object(key)
+                    .stream(stream, size, -1)
+                    .build()
+            );
         } catch (Exception exception) {
             throw new MinioOperationException(exception.getMessage());
         }
