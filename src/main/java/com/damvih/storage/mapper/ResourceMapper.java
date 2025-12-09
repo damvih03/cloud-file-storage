@@ -20,7 +20,7 @@ public class ResourceMapper {
         List<String> parts = Arrays.asList(path.split("/"));
         ResourceType type = pathService.isDirectory(path) ? ResourceType.DIRECTORY : ResourceType.FILE;
         return new ResourceResponseDto(
-                pathService.getParentPath(parts),
+                path.isEmpty() ? "/" : pathService.getParentPath(parts),
                 pathService.getResourceName(parts),
                 type == ResourceType.DIRECTORY ? null : statObjectResponse.size(),
                 type

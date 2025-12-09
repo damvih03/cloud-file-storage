@@ -19,7 +19,8 @@ public class PathService {
         List<String> pathParts = parts.subList(0, pathPartsSize);
 
         String parentPath = String.join("/", pathParts);
-        if (pathPartsSize <= 1) {
+
+        if (pathPartsSize == 1) {
             parentPath += "/";
         }
 
