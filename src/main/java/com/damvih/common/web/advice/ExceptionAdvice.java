@@ -1,6 +1,7 @@
 package com.damvih.common.web.advice;
 
 import com.damvih.common.web.dto.ErrorResponseDto;
+import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.InvalidPathException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.authentication.exception.UserAlreadyExistsException;
@@ -42,6 +43,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleResourceNotFoundException(ResourceNotFoundException exception) {
         return new ErrorResponseDto("Resource not found.");
+    }
+
+    @ExceptionHandler(DirectoryAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDto handleDirectoryAlreadyExistsException(DirectoryAlreadyExistsException exception) {
+        return new ErrorResponseDto("Directory already exists.");
     }
 
 }
