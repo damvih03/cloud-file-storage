@@ -1,0 +1,34 @@
+package com.damvih.storage.controller;
+
+import com.damvih.storage.dto.ResourceResponseDto;
+import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.service.ResourceService;
+import com.damvih.storage.util.PathValidator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/resource")
+@RequiredArgsConstructor
+public class ResourceController {
+
+    private final ResourceService resourceService;
+
+    @GetMapping
+    public ResponseEntity<ResourceResponseDto> get(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
+        PathValidator.validate(path);
+        ResourceResponseDto resourceResponseDto = resourceService.get(path, userDto);
+        return new ResponseEntity<>(resourceResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
+        PathValidator.validate(path);
+        resourceService.delete(path, userDto);
+        return ResponseEntity.noContent().build();
+    }
+
+}
