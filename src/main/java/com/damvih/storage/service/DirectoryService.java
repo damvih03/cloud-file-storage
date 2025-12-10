@@ -29,7 +29,6 @@ public class DirectoryService {
         }
 
         String fullParentPath = pathService.getParentPath(Arrays.asList(fullPath.split("/")));
-
         if (!minioRepository.isObjectExists(fullParentPath)) {
             throw new ParentDirectoryNotFoundException(
                     String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentPath, userDto.getId())
