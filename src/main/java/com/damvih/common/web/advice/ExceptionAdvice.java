@@ -56,4 +56,11 @@ public class ExceptionAdvice {
         return new ErrorResponseDto("Directory already exists.");
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponseDto handleException(Exception exception) {
+        log.info("Unknown exception: {}.", exception.getMessage());
+        return new ErrorResponseDto("Internal server error.");
+    }
+
 }
