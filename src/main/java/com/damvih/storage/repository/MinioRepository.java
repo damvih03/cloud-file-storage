@@ -8,6 +8,7 @@ import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MinioRepository {
 
     private final MinioClient minioClient;
@@ -63,6 +65,7 @@ public class MinioRepository {
 
             for (Result<DeleteError> result : results) {
                 DeleteError error = result.get();
+                log.error("During deleting object '{}' an exception occurred '{}'", error.objectName(), error);
             }
 
         } catch (Exception exception) {

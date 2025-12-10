@@ -5,12 +5,14 @@ import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.repository.MinioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DirectoryService {
 
     private final MinioRepository minioRepository;
@@ -25,7 +27,9 @@ public class DirectoryService {
         String fullPath = pathService.getFull(path, userDto);
 
         if (resourceService.isExists(fullPath)) {
-            throw new DirectoryAlreadyExistsException("Directory already exists.");
+            throw new DirectoryAlreadyExistsException(
+                    String.format("Directory with name '%s' already exists.", fullPath)
+            );
         }
 
         String parentPath = pathService.getParentPath(Arrays.asList(path.split("/")));
@@ -38,6 +42,7 @@ public class DirectoryService {
         }
 
         minioRepository.createDirectory(fullPath);
+        log.info("UserID '{}' created directory '{}'.", userDto.getId(), fullPath);
     }
 
 }

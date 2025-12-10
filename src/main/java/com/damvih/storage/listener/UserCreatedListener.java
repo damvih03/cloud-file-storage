@@ -25,7 +25,7 @@ public class UserCreatedListener {
         String rootDirectoryName = pathService.getUserRootDirectoryName(userDto);
         try {
             minioRepository.createDirectory(rootDirectoryName);
-            log.info("Directory created for userId: {}.", userDto.getId());
+            log.info("Root directory created for UserID: {}.", userDto.getId());
         } catch (Exception exception) {
             log.error("Failed to create user directory for userId: {}.", userDto.getId(), exception);
         }

@@ -7,10 +7,12 @@ import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
 import io.minio.StatObjectResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResourceService {
 
     private final MinioRepository minioRepository;
@@ -21,8 +23,9 @@ public class ResourceService {
         String fullPath = pathService.getFull(path, userDto);
         StatObjectResponse statObjectResponse = minioRepository.getObjectStat(fullPath)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Resource not found: %s.", fullPath)
+                        String.format("UserID '%s' did not find resource '%s'.", userDto.getId(), fullPath)
                 ));
+        log.info("UserID '{}' received metadata for resource '{}'.", userDto.getId(), fullPath);
         return resourceMapper.toResponseDto(path, statObjectResponse);
     }
 
@@ -40,6 +43,7 @@ public class ResourceService {
         } else {
             minioRepository.removeObject(fullPath);
         }
+        log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
     }
 
     public boolean isExists(String fullPath) {
