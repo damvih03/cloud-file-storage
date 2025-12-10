@@ -3,6 +3,7 @@ package com.damvih.common.web.advice;
 import com.damvih.common.web.dto.ErrorResponseDto;
 import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.InvalidPathException;
+import com.damvih.storage.exception.ParentDirectoryNotFoundException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.authentication.exception.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,13 @@ public class ExceptionAdvice {
     public ErrorResponseDto handleResourceNotFoundException(ResourceNotFoundException exception) {
         log.info(exception.getMessage());
         return new ErrorResponseDto("Resource not found.");
+    }
+
+    @ExceptionHandler(ParentDirectoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto handleParentDirectoryNotFoundException(ParentDirectoryNotFoundException exception) {
+        log.info(exception.getMessage());
+        return new ErrorResponseDto("Parent directory not found.");
     }
 
     @ExceptionHandler(DirectoryAlreadyExistsException.class)

@@ -2,6 +2,7 @@ package com.damvih.storage.service;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.exception.DirectoryAlreadyExistsException;
+import com.damvih.storage.exception.ParentDirectoryNotFoundException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.repository.MinioRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,8 @@ public class DirectoryService {
         String fullParentPath = pathService.getFull(parentPath, userDto);
 
         if (!resourceService.isExists(fullParentPath)) {
-            throw new ResourceNotFoundException(
-                    String.format("Parent path not found: %s.", fullParentPath)
+            throw new ParentDirectoryNotFoundException(
+                    String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentPath, userDto.getId())
             );
         }
 
