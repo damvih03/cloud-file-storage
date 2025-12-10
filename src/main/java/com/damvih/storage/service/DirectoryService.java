@@ -3,7 +3,6 @@ package com.damvih.storage.service;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.ParentDirectoryNotFoundException;
-import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.repository.MinioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +26,15 @@ public class DirectoryService {
 
         String fullPath = pathService.getFull(path, userDto);
 
-        if (resourceService.isExists(fullPath)) {
+        if (minioRepository.isObjectExists(fullPath)) {
             throw new DirectoryAlreadyExistsException(
                     String.format("Directory with name '%s' already exists.", fullPath)
             );
         }
 
-        String parentPath = pathService.getParentPath(Arrays.asList(path.split("/")));
-        String fullParentPath = pathService.getFull(parentPath, userDto);
+        String fullParentPath = pathService.getParentPath(Arrays.asList(fullPath.split("/")));
 
-        if (!resourceService.isExists(fullParentPath)) {
+        if (!minioRepository.isObjectExists(fullParentPath)) {
             throw new ParentDirectoryNotFoundException(
                     String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentPath, userDto.getId())
             );

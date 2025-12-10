@@ -32,7 +32,7 @@ public class ResourceService {
     public void delete(String path, UserDto userDto) {
         String fullPath = pathService.getFull(path, userDto);
 
-        if (!isExists(fullPath)) {
+        if (!minioRepository.isObjectExists(fullPath)) {
             throw new ResourceNotFoundException(
                     String.format("Resource not found: %s.", fullPath)
             );
@@ -44,10 +44,6 @@ public class ResourceService {
             minioRepository.removeObject(fullPath);
         }
         log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
-    }
-
-    public boolean isExists(String fullPath) {
-        return minioRepository.getObjectStat(fullPath).isPresent();
     }
 
 }

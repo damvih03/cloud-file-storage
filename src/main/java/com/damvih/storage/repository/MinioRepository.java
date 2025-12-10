@@ -77,6 +77,10 @@ public class MinioRepository {
         putObject(key, new ByteArrayInputStream(new byte[]{}), 0L);
     }
 
+    public boolean isObjectExists(String key) {
+        return getObjectStat(key).isPresent();
+    }
+
     private void putObject(String key, InputStream stream, Long size) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
