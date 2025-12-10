@@ -17,14 +17,10 @@ public class DirectoryService {
 
     private final MinioRepository minioRepository;
     private final PathService pathService;
-    private final ResourceService resourceService;
 
     public void create(String path, UserDto userDto) {
-        if (!pathService.isDirectory(path)) {
-            path += "/";
-        }
-
-        String fullPath = pathService.getFull(path, userDto);
+        String normalizedPath = normalizePath(path);
+        String fullPath = pathService.getFull(normalizedPath, userDto);
 
         if (minioRepository.isObjectExists(fullPath)) {
             throw new DirectoryAlreadyExistsException(
@@ -42,6 +38,13 @@ public class DirectoryService {
 
         minioRepository.createDirectory(fullPath);
         log.info("UserID '{}' created directory '{}'.", userDto.getId(), fullPath);
+    }
+
+    private String normalizePath(String path) {
+        if (!pathService.isDirectory(path)) {
+            path += "/";
+        }
+        return path;
     }
 
 }
