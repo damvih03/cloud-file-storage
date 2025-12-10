@@ -119,6 +119,7 @@ public class MinioRepository {
         List<DeleteObject> objectsToDelete = new ArrayList<>();
 
         for (Item item : items) {
+            log.debug("Added object '{}' to delete.", item.objectName());
             objectsToDelete.add(new DeleteObject(item.objectName()));
         }
 

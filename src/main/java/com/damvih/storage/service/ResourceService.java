@@ -16,21 +16,23 @@ import org.springframework.stereotype.Service;
 public class ResourceService {
 
     private final MinioRepository minioRepository;
-    private final PathService pathService;
     private final ResourceMapper resourceMapper;
 
     public ResourceResponseDto get(String path, UserDto userDto) {
-        String fullPath = pathService.getFull(path, userDto);
+        PathComponents pathComponents = new PathComponents(path, userDto);
+        String fullPath = pathComponents.getFull();
+
         StatObjectResponse statObjectResponse = minioRepository.getObjectStat(fullPath)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("UserID '%s' did not find resource '%s'.", userDto.getId(), fullPath)
                 ));
         log.info("UserID '{}' received metadata for resource '{}'.", userDto.getId(), fullPath);
-        return resourceMapper.toResponseDto(path, statObjectResponse);
+        return resourceMapper.toResponseDto(pathComponents, statObjectResponse);
     }
 
     public void delete(String path, UserDto userDto) {
-        String fullPath = pathService.getFull(path, userDto);
+        PathComponents pathComponents = new PathComponents(path, userDto);
+        String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
             throw new ResourceNotFoundException(
@@ -38,7 +40,7 @@ public class ResourceService {
             );
         }
 
-        if (pathService.isDirectory(path)) {
+        if (pathComponents.isResourceDirectory()) {
             minioRepository.removeObjects(fullPath);
         } else {
             minioRepository.removeObject(fullPath);

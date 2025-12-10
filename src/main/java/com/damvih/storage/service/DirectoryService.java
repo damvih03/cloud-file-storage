@@ -8,19 +8,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DirectoryService {
 
     private final MinioRepository minioRepository;
-    private final PathService pathService;
 
     public void create(String path, UserDto userDto) {
-        String normalizedPath = normalizePath(path);
-        String fullPath = pathService.getFull(normalizedPath, userDto);
+        String normalizedPath = normalize(path);
+        PathComponents pathComponents = new PathComponents(normalizedPath, userDto);
+        String fullPath = pathComponents.getFull();
 
         if (minioRepository.isObjectExists(fullPath)) {
             throw new DirectoryAlreadyExistsException(
@@ -28,20 +26,20 @@ public class DirectoryService {
             );
         }
 
-        String fullParentPath = pathService.getParentPath(Arrays.asList(fullPath.split("/")));
-        if (!minioRepository.isObjectExists(fullParentPath)) {
+        String fullParentDirectory = pathComponents.getFullParentDirectory();
+        if (!minioRepository.isObjectExists(fullParentDirectory)) {
             throw new ParentDirectoryNotFoundException(
-                    String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentPath, userDto.getId())
+                    String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentDirectory, userDto.getId())
             );
         }
 
-        minioRepository.createDirectory(fullPath);
-        log.info("UserID '{}' created directory '{}'.", userDto.getId(), fullPath);
+        minioRepository.createDirectory(pathComponents.getFull());
+        log.info("UserID '{}' created directory '{}'.", userDto.getId(), pathComponents.getFull());
     }
 
-    private String normalizePath(String path) {
-        if (!pathService.isDirectory(path)) {
-            path += "/";
+    private String normalize(String path) {
+        if (!path.endsWith("/")) {
+            return path + "/";
         }
         return path;
     }
