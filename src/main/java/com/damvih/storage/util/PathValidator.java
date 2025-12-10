@@ -11,8 +11,12 @@ public class PathValidator {
             throw new InvalidPathException("Path is blank.");
         }
 
-        if (path.startsWith("/")) {
-            throw new InvalidPathException("Path can not start with a slash.");
+        if (path.matches(".*[|<>*?\\\\].*")) {
+            throw new InvalidPathException("Path contains illegal characters.");
+        }
+
+        if (path.matches("^/.+")) {
+            throw new InvalidPathException("Not empty path can not start with a slash.");
         }
 
         if (path.contains("//")) {

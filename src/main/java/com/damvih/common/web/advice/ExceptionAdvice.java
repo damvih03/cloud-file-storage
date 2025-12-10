@@ -40,6 +40,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(InvalidPathException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleInvalidPathException(InvalidPathException exception) {
+        log.info(exception.getMessage());
         return new ErrorResponseDto("Invalid path.");
     }
 
