@@ -2,13 +2,16 @@ package com.damvih.storage.service;
 
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.entity.MinioResponse;
+import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
-import io.minio.StatObjectResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +25,9 @@ public class ResourceService {
         PathComponents pathComponents = new PathComponents(path, userDto);
         String fullPath = pathComponents.getFull();
 
-        StatObjectResponse statObjectResponse = minioRepository.getObjectStat(fullPath)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("UserID '%s' did not find resource '%s'.", userDto.getId(), fullPath)
-                ));
+        MinioResponse minioResponse = minioRepository.getObjectInformation(pathComponents);
         log.info("UserID '{}' received metadata for resource '{}'.", userDto.getId(), fullPath);
-        return resourceMapper.toResponseDto(pathComponents, statObjectResponse);
+        return resourceMapper.toResponseDto(minioResponse);
     }
 
     public void delete(String path, UserDto userDto) {
@@ -40,11 +40,14 @@ public class ResourceService {
             );
         }
 
+        List<String> objectNames;
         if (pathComponents.isResourceDirectory()) {
-            minioRepository.removeObjects(fullPath);
+            objectNames = minioRepository.getObjectNames(fullPath, true);
         } else {
-            minioRepository.removeObject(fullPath);
+            objectNames = List.of(fullPath);
         }
+
+        minioRepository.removeObjects(objectNames);
         log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
     }
 

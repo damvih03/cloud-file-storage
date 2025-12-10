@@ -1,4 +1,4 @@
-package com.damvih.storage.service;
+package com.damvih.storage.entity;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceType;

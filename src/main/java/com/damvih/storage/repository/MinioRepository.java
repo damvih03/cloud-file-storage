@@ -1,7 +1,10 @@
 package com.damvih.storage.repository;
 
 import com.damvih.storage.config.MinioClientProperties;
+import com.damvih.storage.entity.MinioResponse;
 import com.damvih.storage.exception.MinioOperationException;
+import com.damvih.storage.exception.ResourceNotFoundException;
+import com.damvih.storage.entity.PathComponents;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
@@ -25,38 +28,17 @@ public class MinioRepository {
     private final MinioClient minioClient;
     private final MinioClientProperties minioClientProperties;
 
-    public Optional<StatObjectResponse> getObjectStat(String key) {
-        try {
-            return Optional.of(minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(minioClientProperties.getBucketName())
-                    .object(key)
-                    .build()));
-        } catch (ErrorResponseException exception) {
-            String code = exception.errorResponse().code();
-            if (code.equals("NoSuchKey")) {
-                return Optional.empty();
-            }
-            throw new MinioOperationException(exception.getMessage());
-        } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
-        }
+    public MinioResponse getObjectInformation(PathComponents pathComponents) {
+        StatObjectResponse statObjectResponse = getStatObject(pathComponents.getFull())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Resource '%s' not found.", pathComponents.getFull())
+                ));
+        return new MinioResponse(pathComponents, statObjectResponse.size());
     }
 
-    public void removeObject(String key) {
+    public void removeObjects(List<String> objectNames) {
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder()
-                    .bucket(minioClientProperties.getBucketName())
-                    .object(key)
-                    .build());
-        } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
-        }
-    }
-
-    public void removeObjects(String prefix) {
-        try {
-            Iterable<Result<Item>> items = getObjects(prefix, true);
-            List<DeleteObject> objectsToDelete = createObjectsToDelete(extractItems(items));
+            List<DeleteObject> objectsToDelete = createObjectsToDelete(objectNames);
 
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(RemoveObjectsArgs.builder()
                     .bucket(minioClientProperties.getBucketName())
@@ -77,8 +59,39 @@ public class MinioRepository {
         putObject(key, new ByteArrayInputStream(new byte[]{}), 0L);
     }
 
+    public List<String> getObjectNames(String prefix, boolean recursive) {
+        try {
+            Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioClientProperties.getBucketName())
+                    .prefix(prefix)
+                    .recursive(recursive)
+                    .build()
+            );
+            return extractObjectNames(results);
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
+    }
+
     public boolean isObjectExists(String key) {
-        return getObjectStat(key).isPresent();
+        return getStatObject(key).isPresent();
+    }
+
+    private Optional<StatObjectResponse> getStatObject(String key) {
+        try {
+            return Optional.of(minioClient.statObject(StatObjectArgs.builder()
+                    .bucket(minioClientProperties.getBucketName())
+                    .object(key)
+                    .build()));
+        } catch (ErrorResponseException exception) {
+            String code = exception.errorResponse().code();
+            if (code.equals("NoSuchKey")) {
+                return Optional.empty();
+            }
+            throw new MinioOperationException(exception.getMessage());
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
     }
 
     private void putObject(String key, InputStream stream, Long size) {
@@ -94,20 +107,11 @@ public class MinioRepository {
         }
     }
 
-    private Iterable<Result<Item>> getObjects(String prefix, boolean recursive) {
-        return minioClient.listObjects(ListObjectsArgs.builder()
-                .bucket(minioClientProperties.getBucketName())
-                .prefix(prefix)
-                .recursive(recursive)
-                .build()
-        );
-    }
-
-    private List<Item> extractItems(Iterable<Result<Item>> results) {
+    private List<String> extractObjectNames(Iterable<Result<Item>> results) {
         try {
-            List<Item> items = new ArrayList<>();
+            List<String> items = new ArrayList<>();
             for (Result<Item> result : results) {
-                items.add(result.get());
+                items.add(result.get().objectName());
             }
             return items;
         } catch (Exception exception) {
@@ -115,12 +119,12 @@ public class MinioRepository {
         }
     }
 
-    private List<DeleteObject> createObjectsToDelete(List<Item> items) {
+    private List<DeleteObject> createObjectsToDelete(List<String> objectNames) {
         List<DeleteObject> objectsToDelete = new ArrayList<>();
 
-        for (Item item : items) {
-            log.debug("Added object '{}' to delete.", item.objectName());
-            objectsToDelete.add(new DeleteObject(item.objectName()));
+        for (String objectName : objectNames) {
+            log.debug("Added object '{}' to delete.", objectName);
+            objectsToDelete.add(new DeleteObject(objectName));
         }
 
         return objectsToDelete;

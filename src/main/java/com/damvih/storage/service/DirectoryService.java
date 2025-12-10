@@ -1,6 +1,7 @@
 package com.damvih.storage.service;
 
 import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.exception.DirectoryAlreadyExistsException;
 import com.damvih.storage.exception.ParentDirectoryNotFoundException;
 import com.damvih.storage.repository.MinioRepository;

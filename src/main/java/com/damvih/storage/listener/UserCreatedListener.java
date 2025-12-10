@@ -3,7 +3,7 @@ package com.damvih.storage.listener;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.authentication.event.UserCreatedEvent;
 import com.damvih.storage.repository.MinioRepository;
-import com.damvih.storage.service.PathComponents;
+import com.damvih.storage.entity.PathComponents;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
