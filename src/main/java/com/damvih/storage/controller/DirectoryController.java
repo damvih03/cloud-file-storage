@@ -29,7 +29,7 @@ public class DirectoryController {
     @GetMapping
     public ResponseEntity<List<ResourceResponseDto>> get(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
-        return new ResponseEntity<>(directoryService.list(path, userDto), HttpStatus.OK);
+        return new ResponseEntity<>(directoryService.get(path, userDto), HttpStatus.OK);
     }
 
 }

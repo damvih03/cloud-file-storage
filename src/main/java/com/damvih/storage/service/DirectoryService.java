@@ -47,7 +47,7 @@ public class DirectoryService {
         log.info("UserID '{}' created directory '{}'.", userDto.getId(), pathComponents.getFull());
     }
 
-    public List<ResourceResponseDto> list(String path, UserDto userDto) {
+    public List<ResourceResponseDto> get(String path, UserDto userDto) {
         String normalizedPath = normalizeName(path);
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
@@ -58,16 +58,7 @@ public class DirectoryService {
             );
         }
 
-        List<MinioResponse> minioResponses = new ArrayList<>();
-        List<String> objectNames = minioRepository.getObjectNames(fullPath, false);
-        objectNames.remove(fullPath);
-        for (String objectName : objectNames) {
-            PathComponents objectPathComponents = PathComponentsBuilder.buildByFullPath(objectName);
-            minioResponses.add(minioRepository.getObjectInformation(objectPathComponents));
-            log.debug("Object name '{}' is changed to '{}'", objectName, pathComponents.getFull());
-        }
-
-        return resourceMapper.toResponseDto(minioResponses);
+        return getObjectsInformation(fullPath);
     }
 
     private String normalizeName(String path) {
@@ -75,6 +66,20 @@ public class DirectoryService {
             return path + "/";
         }
         return path;
+    }
+
+    private List<ResourceResponseDto> getObjectsInformation(String fullPath) {
+        List<MinioResponse> minioResponses = new ArrayList<>();
+
+        List<String> objectNames = minioRepository.getObjectNames(fullPath, false);
+        objectNames.remove(fullPath);
+
+        for (String objectName : objectNames) {
+            PathComponents objectPathComponents = PathComponentsBuilder.buildByFullPath(objectName);
+            minioResponses.add(minioRepository.getObjectInformation(objectPathComponents));
+        }
+
+        return resourceMapper.toResponseDto(minioResponses);
     }
 
 }

@@ -41,15 +41,17 @@ public class ResourceService {
             );
         }
 
-        List<String> objectNames;
-        if (pathComponents.isResourceDirectory()) {
-            objectNames = minioRepository.getObjectNames(fullPath, true);
-        } else {
-            objectNames = List.of(fullPath);
-        }
+        List<String> objectNames = getObjectNames(pathComponents);
 
         minioRepository.removeObjects(objectNames);
         log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
+    }
+
+    private List<String> getObjectNames(PathComponents pathComponents) {
+        if (pathComponents.isResourceDirectory()) {
+            return minioRepository.getObjectNames(pathComponents.getFull(), true);
+        }
+        return List.of(pathComponents.getFull());
     }
 
 }
