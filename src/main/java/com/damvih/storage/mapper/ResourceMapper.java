@@ -3,14 +3,16 @@ package com.damvih.storage.mapper;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.entity.MinioResponse;
 import com.damvih.storage.entity.PathComponents;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-@RequiredArgsConstructor
-public class ResourceMapper {
+import java.util.List;
 
-    public ResourceResponseDto toResponseDto(MinioResponse minioResponse) {
+import static org.mapstruct.MappingConstants.*;
+
+@Mapper(componentModel = ComponentModel.SPRING)
+public interface ResourceMapper {
+
+    default ResourceResponseDto toResponseDto(MinioResponse minioResponse) {
         PathComponents pathComponents = minioResponse.getPathComponents();
         return new ResourceResponseDto(
                 pathComponents.getParentDirectory().isEmpty() ? "/" : pathComponents.getParentDirectory(),
@@ -19,5 +21,7 @@ public class ResourceMapper {
                 pathComponents.getResourceType()
         );
     }
+
+    List<ResourceResponseDto> toResponseDto(List<MinioResponse> minioResponses);
 
 }

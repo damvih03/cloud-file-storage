@@ -66,9 +66,8 @@ public class DirectoryService {
             minioResponses.add(minioRepository.getObjectInformation(objectPathComponents));
             log.debug("Object name '{}' is changed to '{}'", objectName, pathComponents.getFull());
         }
-        return minioResponses.stream()
-                .map(resourceMapper::toResponseDto)
-                .toList();
+
+        return resourceMapper.toResponseDto(minioResponses);
     }
 
     private String normalizeDirectoryName(String path) {
