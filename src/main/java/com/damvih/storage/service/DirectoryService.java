@@ -9,6 +9,7 @@ import com.damvih.storage.exception.ParentDirectoryNotFoundException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,8 @@ public class DirectoryService {
     private final ResourceMapper resourceMapper;
 
     public void create(String path, UserDto userDto) {
-        String normalizedPath = normalize(path);
-        PathComponents pathComponents = new PathComponents(normalizedPath, userDto);
+        String normalizedPath = normalizeDirectoryName(path);
+        PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
         if (minioRepository.isObjectExists(fullPath)) {
@@ -47,8 +48,8 @@ public class DirectoryService {
     }
 
     public List<ResourceResponseDto> list(String path, UserDto userDto) {
-        String normalizedPath = normalize(path);
-        PathComponents pathComponents = new PathComponents(normalizedPath, userDto);
+        String normalizedPath = normalizeDirectoryName(path);
+        PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
@@ -61,20 +62,16 @@ public class DirectoryService {
         List<String> objectNames = minioRepository.getObjectNames(fullPath, false);
         objectNames.remove(fullPath);
         for (String objectName : objectNames) {
-            String pathWithoutRoot = objectName.replaceFirst(pathComponents.getRootDirectory(), "");
-            log.debug("Object name '{}' is changed to '{}'", objectName, pathWithoutRoot);
-            minioResponses.add(minioRepository.getObjectInformation(new PathComponents(pathWithoutRoot, userDto)));
+            PathComponents objectPathComponents = PathComponentsBuilder.buildByFullPath(objectName);
+            minioResponses.add(minioRepository.getObjectInformation(objectPathComponents));
+            log.debug("Object name '{}' is changed to '{}'", objectName, pathComponents.getFull());
         }
         return minioResponses.stream()
                 .map(resourceMapper::toResponseDto)
                 .toList();
     }
 
-    private String normalize(String path) {
-        if (path.equals("/")) {
-            return "";
-        }
-
+    private String normalizeDirectoryName(String path) {
         if (!path.endsWith("/")) {
             return path + "/";
         }

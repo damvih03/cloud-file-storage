@@ -7,6 +7,7 @@ import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class ResourceService {
     private final ResourceMapper resourceMapper;
 
     public ResourceResponseDto get(String path, UserDto userDto) {
-        PathComponents pathComponents = new PathComponents(path, userDto);
+        PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
         String fullPath = pathComponents.getFull();
 
         MinioResponse minioResponse = minioRepository.getObjectInformation(pathComponents);
@@ -31,7 +32,7 @@ public class ResourceService {
     }
 
     public void delete(String path, UserDto userDto) {
-        PathComponents pathComponents = new PathComponents(path, userDto);
+        PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
         String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
