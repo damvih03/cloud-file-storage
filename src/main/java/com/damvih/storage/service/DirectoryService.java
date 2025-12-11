@@ -26,7 +26,7 @@ public class DirectoryService {
     private final ResourceMapper resourceMapper;
 
     public void create(String path, UserDto userDto) {
-        String normalizedPath = normalizeDirectoryName(path);
+        String normalizedPath = normalizeName(path);
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
@@ -48,7 +48,7 @@ public class DirectoryService {
     }
 
     public List<ResourceResponseDto> list(String path, UserDto userDto) {
-        String normalizedPath = normalizeDirectoryName(path);
+        String normalizedPath = normalizeName(path);
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
@@ -70,7 +70,7 @@ public class DirectoryService {
         return resourceMapper.toResponseDto(minioResponses);
     }
 
-    private String normalizeDirectoryName(String path) {
+    private String normalizeName(String path) {
         if (!path.endsWith("/")) {
             return path + "/";
         }
