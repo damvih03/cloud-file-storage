@@ -30,6 +30,14 @@ public class PathComponents {
         return getRootDirectory() + getParentDirectory();
     }
 
+    public String getWithoutRootDirectory() {
+        String pathWithoutRootDirectory = parentDirectory + resourceName;
+        if (isResourceDirectory()) {
+            return pathWithoutRootDirectory + "/";
+        }
+        return pathWithoutRootDirectory;
+    }
+
     public boolean isResourceDirectory() {
         return resourceType == ResourceType.DIRECTORY;
     }

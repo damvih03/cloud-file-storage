@@ -12,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +50,63 @@ public class ResourceService {
         log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
     }
 
+    public byte[] download(String path, UserDto userDto) {
+        PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
+        String fullPath = pathComponents.getFull();
+
+        if (!minioRepository.isObjectExists(fullPath)) {
+            throw new ResourceNotFoundException(
+                    String.format("Resource not found: %s.", fullPath)
+            );
+        }
+
+        if (pathComponents.isResourceDirectory()) {
+            return createZip(pathComponents);
+        }
+
+        return minioRepository.getObjectData(fullPath);
+    }
+
+    private byte[] createZip(PathComponents pathComponents) {
+        List<String> objectNames = getObjectNames(pathComponents);
+        objectNames.remove(pathComponents.getFull());
+
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            ZipOutputStream zipOutputStream = new ZipOutputStream(stream);
+
+            for (String objectName : objectNames) {
+                PathComponents objectPathComponents = PathComponentsBuilder.buildByFullPath(objectName);
+                String relativePath = buildRelativePath(pathComponents, objectPathComponents);
+
+                ZipEntry zipEntry = new ZipEntry(relativePath);
+                zipOutputStream.putNextEntry(zipEntry);
+                if (!objectPathComponents.isResourceDirectory()) {
+                    byte[] objectData = minioRepository.getObjectData(objectName);
+                    zipOutputStream.write(objectData);
+                }
+                zipOutputStream.closeEntry();
+
+            }
+            zipOutputStream.close();
+
+            return stream.toByteArray();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     private List<String> getObjectNames(PathComponents pathComponents) {
         if (pathComponents.isResourceDirectory()) {
             return minioRepository.getObjectNames(pathComponents.getFull(), true);
         }
         return List.of(pathComponents.getFull());
+    }
+
+    private String buildRelativePath(PathComponents main, PathComponents object) {
+        return object.getWithoutRootDirectory()
+                .substring(
+                        main.getParentDirectory().length()
+                );
     }
 
 }

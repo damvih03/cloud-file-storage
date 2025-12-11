@@ -6,6 +6,7 @@ import com.damvih.storage.service.ResourceService;
 import com.damvih.storage.util.PathValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,16 @@ public class ResourceController {
         PathValidator.validate(path);
         resourceService.delete(path, userDto);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> download(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
+        PathValidator.validate(path);
+        byte[] data = resourceService.download(path, userDto);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(data);
     }
 
 }

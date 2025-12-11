@@ -77,6 +77,19 @@ public class MinioRepository {
         return getStatObject(key).isPresent();
     }
 
+    public byte[] getObjectData(String key) {
+        try (InputStream stream =
+            minioClient.getObject(GetObjectArgs.builder()
+                            .bucket(minioClientProperties.getBucketName())
+                            .object(key)
+                    .build())) {
+
+            return stream.readAllBytes();
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
+    }
+
     private Optional<StatObjectResponse> getStatObject(String key) {
         try {
             return Optional.of(minioClient.statObject(StatObjectArgs.builder()
