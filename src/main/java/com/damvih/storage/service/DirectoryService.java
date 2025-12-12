@@ -14,17 +14,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DirectoryService {
 
+    private final ZipCreationService zipCreationService;
     private final MinioRepository minioRepository;
     private final ResourceMapper resourceMapper;
 
@@ -70,22 +68,8 @@ public class DirectoryService {
         return objectNames;
     }
 
-    public byte[] createZip(PathComponents pathComponents) {
-        List<String> objectNames = getObjectNames(pathComponents, true);
-
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            ZipOutputStream zipOutputStream = new ZipOutputStream(stream);
-
-            for (PathComponents objectPathComponents: PathComponentsBuilder.buildByFullPaths(objectNames)) {
-                addToZip(objectPathComponents, pathComponents, zipOutputStream);
-            }
-
-            zipOutputStream.close();
-
-            return stream.toByteArray();
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
+    public byte[] download(PathComponents pathComponents) {
+        return zipCreationService.createZip(pathComponents, getObjectNames(pathComponents, false));
     }
 
     public List<String> copyObjects(PathComponents oldParent, PathComponents newParent) {
@@ -109,17 +93,6 @@ public class DirectoryService {
         );
     }
 
-    private void addToZip(PathComponents objectPathComponents, PathComponents relativePathComponents,ZipOutputStream zipOutputStream) throws Exception {
-        String relativePath = buildRelativePath(relativePathComponents, objectPathComponents);
-        ZipEntry zipEntry = new ZipEntry(relativePath);
-        zipOutputStream.putNextEntry(zipEntry);
-        if (!objectPathComponents.isResourceDirectory()) {
-            byte[] objectData = minioRepository.getObjectData(objectPathComponents.getFull());
-            zipOutputStream.write(objectData);
-        }
-        zipOutputStream.closeEntry();
-    }
-
     private String normalizeName(String path) {
         if (!path.endsWith("/")) {
             return path + "/";
@@ -136,11 +109,6 @@ public class DirectoryService {
         }
 
         return resourceMapper.toResponseDto(minioResponses);
-    }
-
-    private String buildRelativePath(PathComponents main, PathComponents object) {
-        return object.getWithoutRootDirectory()
-                .substring(main.getParentDirectory().length());
     }
 
 }

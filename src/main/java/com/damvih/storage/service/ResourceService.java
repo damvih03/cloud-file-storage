@@ -64,7 +64,7 @@ public class ResourceService {
         }
 
         if (pathComponents.isResourceDirectory()) {
-            return directoryService.createZip(pathComponents);
+            return directoryService.download(pathComponents);
         }
 
         return minioRepository.getObjectData(fullPath);
