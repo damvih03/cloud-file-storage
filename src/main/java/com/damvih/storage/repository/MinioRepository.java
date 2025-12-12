@@ -4,7 +4,6 @@ import com.damvih.storage.config.MinioClientProperties;
 import com.damvih.storage.entity.MinioResponse;
 import com.damvih.storage.exception.MinioOperationException;
 import com.damvih.storage.exception.ResourceNotFoundException;
-import com.damvih.storage.entity.PathComponents;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
