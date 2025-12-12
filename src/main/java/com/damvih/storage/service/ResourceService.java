@@ -12,11 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +64,7 @@ public class ResourceService {
         }
 
         if (pathComponents.isResourceDirectory()) {
-            return createZip(pathComponents);
+            return directoryService.createZip(pathComponents);
         }
 
         return minioRepository.getObjectData(fullPath);
@@ -81,7 +78,7 @@ public class ResourceService {
 
         List<String> objectNames = new ArrayList<>(List.of(source.getFull()));
         if (source.isResourceDirectory()) {
-            objectNames.addAll(copyDirectoryObjects(source, target, userDto));
+            objectNames.addAll(directoryService.copyObjects(source, target));
         }
 
         MinioResponse minioResponse = minioRepository.copyObject(source.getFull(), target.getFull());
@@ -89,58 +86,6 @@ public class ResourceService {
         log.info("Resource '{}' changed successfully to '{}' by UserID '{}'.", source.getFull(), target.getFull(), userDto.getId());
 
         return resourceMapper.toResponseDto(minioResponse);
-    }
-
-    private byte[] createZip(PathComponents pathComponents) {
-        List<String> objectNames = directoryService.getObjectNames(pathComponents, true);
-
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            ZipOutputStream zipOutputStream = new ZipOutputStream(stream);
-
-            for (PathComponents objectPathComponents: PathComponentsBuilder.buildByFullPaths(objectNames)) {
-                String relativePath = buildRelativePath(pathComponents, objectPathComponents);
-
-                ZipEntry zipEntry = new ZipEntry(relativePath);
-                zipOutputStream.putNextEntry(zipEntry);
-                if (!objectPathComponents.isResourceDirectory()) {
-                    byte[] objectData = minioRepository.getObjectData(objectPathComponents.getFull());
-                    zipOutputStream.write(objectData);
-                }
-                zipOutputStream.closeEntry();
-
-            }
-            zipOutputStream.close();
-
-            return stream.toByteArray();
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private List<String> copyDirectoryObjects(PathComponents source, PathComponents target, UserDto userDto) {
-        List<String> directoryObjectNames = directoryService.getObjectNames(source, true);
-
-        for (PathComponents oldObjectPathComponents : PathComponentsBuilder.buildByFullPaths(directoryObjectNames)) {
-            PathComponents newPathComponents = PathComponentsBuilder.build(
-                    changeParentObjectDirectoryToNew(oldObjectPathComponents, source, target),
-                    userDto);
-
-            minioRepository.copyObject(oldObjectPathComponents.getFull(), newPathComponents.getFull());
-            log.info("Resource inside directory '{}' changed successfully to '{}' by UserID '{}'.", oldObjectPathComponents.getFull(), newPathComponents.getFull(), userDto.getId());
-        }
-
-        return directoryObjectNames;
-    }
-
-    private String buildRelativePath(PathComponents main, PathComponents object) {
-        return object.getWithoutRootDirectory()
-                .substring(
-                        main.getParentDirectory().length()
-                );
-    }
-
-    private String changeParentObjectDirectoryToNew(PathComponents object, PathComponents source, PathComponents target) {
-        return target.getWithoutRootDirectory() + object.getWithoutRootDirectory().substring(source.getWithoutRootDirectory().length());
     }
 
     private void validateMove(PathComponents source, PathComponents target) {
