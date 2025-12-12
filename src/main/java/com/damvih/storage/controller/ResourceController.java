@@ -42,4 +42,14 @@ public class ResourceController {
                 .body(data);
     }
 
+    @GetMapping("/move")
+    public ResponseEntity<ResourceResponseDto> move(@RequestParam(name = "from") String from,
+                                                    @RequestParam(name = "to") String to,
+                                                    @AuthenticationPrincipal UserDto userDto) {
+        PathValidator.validate(from);
+        PathValidator.validate(to);
+
+        return new ResponseEntity<>(resourceService.move(from, to, userDto), HttpStatus.OK);
+    }
+
 }

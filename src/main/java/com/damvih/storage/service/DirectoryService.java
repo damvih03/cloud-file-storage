@@ -58,7 +58,13 @@ public class DirectoryService {
             );
         }
 
-        return getObjectsInformation(fullPath);
+        return getObjectsInformation(pathComponents);
+    }
+
+    public List<String> getObjectNames(PathComponents pathComponents, boolean recursive) {
+        List<String> objectNames = minioRepository.getObjectNames(pathComponents.getFull(), recursive);
+        objectNames.remove(pathComponents.getFull());
+        return objectNames;
     }
 
     private String normalizeName(String path) {
@@ -68,15 +74,12 @@ public class DirectoryService {
         return path;
     }
 
-    private List<ResourceResponseDto> getObjectsInformation(String fullPath) {
+    private List<ResourceResponseDto> getObjectsInformation(PathComponents pathComponents) {
+        List<String> objectNames = getObjectNames(pathComponents, false);
+
         List<MinioResponse> minioResponses = new ArrayList<>();
-
-        List<String> objectNames = minioRepository.getObjectNames(fullPath, false);
-        objectNames.remove(fullPath);
-
-        for (String objectName : objectNames) {
-            PathComponents objectPathComponents = PathComponentsBuilder.buildByFullPath(objectName);
-            minioResponses.add(minioRepository.getObjectInformation(objectPathComponents));
+        for (PathComponents objectPathComponents : PathComponentsBuilder.buildByFullPaths(objectNames)) {
+            minioResponses.add(minioRepository.getObjectInformation(objectPathComponents.getFull()));
         }
 
         return resourceMapper.toResponseDto(minioResponses);

@@ -28,12 +28,12 @@ public class MinioRepository {
     private final MinioClient minioClient;
     private final MinioClientProperties minioClientProperties;
 
-    public MinioResponse getObjectInformation(PathComponents pathComponents) {
-        StatObjectResponse statObjectResponse = getStatObject(pathComponents.getFull())
+    public MinioResponse getObjectInformation(String key) {
+        StatObjectResponse statObjectResponse = getStatObject(key)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Resource '%s' not found.", pathComponents.getFull())
+                        String.format("Resource '%s' not found.", key)
                 ));
-        return new MinioResponse(pathComponents, statObjectResponse.size());
+        return new MinioResponse(key, statObjectResponse.size());
     }
 
     public void removeObjects(List<String> objectNames) {
@@ -79,12 +79,29 @@ public class MinioRepository {
 
     public byte[] getObjectData(String key) {
         try (InputStream stream =
-            minioClient.getObject(GetObjectArgs.builder()
-                            .bucket(minioClientProperties.getBucketName())
-                            .object(key)
-                    .build())) {
+                     minioClient.getObject(GetObjectArgs.builder()
+                             .bucket(minioClientProperties.getBucketName())
+                             .object(key)
+                             .build())) {
 
             return stream.readAllBytes();
+        } catch (Exception exception) {
+            throw new MinioOperationException(exception.getMessage());
+        }
+    }
+
+    public MinioResponse copyObject(String oldKey, String newKey) {
+        try {
+            minioClient.copyObject(CopyObjectArgs.builder()
+                    .bucket(minioClientProperties.getBucketName())
+                    .object(newKey)
+                    .source(CopySource.builder()
+                            .bucket(minioClientProperties.getBucketName())
+                            .object(oldKey)
+                            .build())
+                    .build());
+
+            return getObjectInformation(newKey);
         } catch (Exception exception) {
             throw new MinioOperationException(exception.getMessage());
         }

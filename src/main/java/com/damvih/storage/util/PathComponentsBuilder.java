@@ -29,6 +29,12 @@ public class PathComponentsBuilder {
         );
     }
 
+    public List<PathComponents> buildByFullPaths(List<String> fullPaths) {
+        return fullPaths.stream()
+                .map(PathComponentsBuilder::buildByFullPath)
+                .toList();
+    }
+
     private String getRootDirectory(UserDto userDto) {
         return String.format("user-%s-files/", userDto.getId());
     }

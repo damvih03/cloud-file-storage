@@ -1,10 +1,7 @@
 package com.damvih.common.web.advice;
 
 import com.damvih.common.web.dto.ErrorResponseDto;
-import com.damvih.storage.exception.DirectoryAlreadyExistsException;
-import com.damvih.storage.exception.InvalidPathException;
-import com.damvih.storage.exception.ParentDirectoryNotFoundException;
-import com.damvih.storage.exception.ResourceNotFoundException;
+import com.damvih.storage.exception.*;
 import com.damvih.authentication.exception.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -63,6 +60,20 @@ public class ExceptionAdvice {
     public ErrorResponseDto handleDirectoryAlreadyExistsException(DirectoryAlreadyExistsException exception) {
         log.info(exception.getMessage());
         return new ErrorResponseDto("Directory already exists.");
+    }
+
+    @ExceptionHandler(ResourceTypesNotMatchesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleResourceTypesNotMatchesException(ResourceTypesNotMatchesException exception) {
+        log.info(exception.getMessage());
+        return new ErrorResponseDto("Resource types are not match.");
+    }
+
+    @ExceptionHandler(TargetResourceAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDto handleTargetResourceAlreadyExistsException(TargetResourceAlreadyExistsException exception) {
+        log.info(exception.getMessage());
+        return new ErrorResponseDto("Target resource already exists.");
     }
 
     @ExceptionHandler(Exception.class)
