@@ -69,7 +69,7 @@ public class DirectoryService {
     }
 
     public byte[] download(PathComponents pathComponents) {
-        return zipCreationService.createZip(pathComponents, getObjectNames(pathComponents, false));
+        return zipCreationService.createZip(pathComponents, getObjectNames(pathComponents, true));
     }
 
     public List<String> copyObjects(PathComponents oldParent, PathComponents newParent) {
