@@ -88,6 +88,33 @@ public class ResourceService {
         return resourceMapper.toResponseDto(minioResponse);
     }
 
+    public List<ResourceResponseDto> find(String query, UserDto userDto) {
+        PathComponents root = PathComponentsBuilder.build("", userDto);
+        List<String> objectNames = directoryService.getObjectNames(root, true)
+                .stream()
+                .toList();
+
+        List<String> filteredObjectNames = filterByQuery(query, objectNames);
+
+        return resourceMapper.toResponseDto(
+                filteredObjectNames.stream()
+                        .map(minioRepository::getObjectInformation).toList()
+        );
+
+    }
+
+    private List<String> filterByQuery(String query, List<String> objectNames) {
+        query = query.toLowerCase();
+        List<String> filteredObjectNames = new ArrayList<>();
+        for (PathComponents objectPathComponents : PathComponentsBuilder.buildByFullPaths(objectNames)) {
+            String resourceNameInLowerCase = objectPathComponents.getResourceName().toLowerCase();
+            if (resourceNameInLowerCase.contains(query)) {
+                filteredObjectNames.add(objectPathComponents.getFull());
+            }
+        }
+        return filteredObjectNames;
+    }
+
     private void validateMove(PathComponents source, PathComponents target) {
         if (!source.getResourceType().equals(target.getResourceType())) {
             throw new ResourceTypesNotMatchesException("Source and target resource types do not match.");

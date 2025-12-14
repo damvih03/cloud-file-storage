@@ -4,12 +4,15 @@ import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.service.ResourceService;
 import com.damvih.storage.util.PathValidator;
+import com.damvih.storage.util.QueryValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/resource")
@@ -50,6 +53,12 @@ public class ResourceController {
         PathValidator.validate(to);
 
         return new ResponseEntity<>(resourceService.move(from, to, userDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ResourceResponseDto>> search(@RequestParam(name = "query") String query, @AuthenticationPrincipal UserDto userDto) {
+        QueryValidator.validate(query);
+        return new ResponseEntity<>(resourceService.find(query, userDto), HttpStatus.OK);
     }
 
 }

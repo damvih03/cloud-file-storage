@@ -41,6 +41,13 @@ public class ExceptionAdvice {
         return new ErrorResponseDto("Invalid path.");
     }
 
+    @ExceptionHandler(InvalidQueryException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleInvalidQueryException(InvalidQueryException exception) {
+        log.info(exception.getMessage());
+        return new ErrorResponseDto("Invalid query for searching.");
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto handleResourceNotFoundException(ResourceNotFoundException exception) {
