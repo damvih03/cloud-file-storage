@@ -106,8 +106,8 @@ public class MinioRepository {
         }
     }
 
-    public void saveObject(String key, byte[] data, long size) {
-        putObject(key, new ByteArrayInputStream(data), size);
+    public void saveObject(String key, InputStream stream, long size) {
+        putObject(key, stream, size);
     }
 
     private Optional<StatObjectResponse> getStatObject(String key) {
