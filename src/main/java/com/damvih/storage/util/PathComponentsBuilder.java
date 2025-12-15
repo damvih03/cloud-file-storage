@@ -2,7 +2,7 @@ package com.damvih.storage.util;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceType;
-import com.damvih.storage.entity.PathComponents;
+import com.damvih.storage.service.PathComponents;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;

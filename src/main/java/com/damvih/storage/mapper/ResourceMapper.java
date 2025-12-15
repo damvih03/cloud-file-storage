@@ -2,7 +2,7 @@ package com.damvih.storage.mapper;
 
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.entity.MinioResponse;
-import com.damvih.storage.entity.PathComponents;
+import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
 import org.mapstruct.Mapper;
 

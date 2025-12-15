@@ -4,7 +4,6 @@ import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.UploadResourceRequestDto;
 import com.damvih.storage.entity.MinioResponse;
-import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.exception.*;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;

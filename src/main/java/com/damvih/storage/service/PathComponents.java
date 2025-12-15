@@ -1,4 +1,4 @@
-package com.damvih.storage.entity;
+package com.damvih.storage.service;
 
 import com.damvih.storage.dto.ResourceType;
 import lombok.AllArgsConstructor;

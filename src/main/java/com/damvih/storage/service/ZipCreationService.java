@@ -1,6 +1,5 @@
 package com.damvih.storage.service;
 
-import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.repository.MinioRepository;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
