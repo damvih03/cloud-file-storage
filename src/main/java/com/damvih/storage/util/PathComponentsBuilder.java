@@ -5,7 +5,6 @@ import com.damvih.storage.dto.ResourceType;
 import com.damvih.storage.entity.PathComponents;
 import lombok.experimental.UtilityClass;
 
-import java.util.Arrays;
 import java.util.List;
 
 @UtilityClass
@@ -40,28 +39,27 @@ public class PathComponentsBuilder {
     }
 
     private String extractParentDirectory(String path) {
-        if (path.equals("/")) {
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        int lastSlash = path.lastIndexOf("/");
+        if (lastSlash <= 0) {
             return "";
         }
-
-        List<String> pathParts = Arrays.asList(path.split("/"));
-        List<String> parentDirectoryParts = pathParts.subList(0, pathParts.size() - 1);
-
-        String parentPath = String.join("/", parentDirectoryParts);
-
-        if (!parentDirectoryParts.isEmpty()) {
-            parentPath += "/";
-        }
-
-        return parentPath;
+        return path.substring(0, lastSlash + 1);
     }
 
     private String extractResourceName(String path) {
-        List<String> pathParts = Arrays.asList(path.split("/"));
-        if (pathParts.isEmpty()) {
-            return "";
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
         }
-        return pathParts.get(pathParts.size() - 1);
+
+        int lastSlash = path.lastIndexOf("/");
+        if (lastSlash <= 0) {
+            return path;
+        }
+        return path.substring(lastSlash + 1);
     }
 
     private ResourceType getResourceType(String path) {
