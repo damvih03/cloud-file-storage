@@ -3,7 +3,7 @@ package com.damvih.storage.controller;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.service.DirectoryService;
-import com.damvih.storage.util.PathValidator;
+import com.damvih.storage.util.validation.PathValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

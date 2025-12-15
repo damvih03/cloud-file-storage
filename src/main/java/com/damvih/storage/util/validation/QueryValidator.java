@@ -1,4 +1,4 @@
-package com.damvih.storage.util;
+package com.damvih.storage.util.validation;
 
 import com.damvih.storage.exception.InvalidQueryException;
 import lombok.experimental.UtilityClass;
