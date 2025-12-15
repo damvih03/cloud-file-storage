@@ -2,6 +2,7 @@ package com.damvih.storage.service;
 
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.dto.UploadResourceRequestDto;
 import com.damvih.storage.entity.MinioResponse;
 import com.damvih.storage.entity.PathComponents;
 import com.damvih.storage.exception.*;
@@ -9,8 +10,10 @@ import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +104,46 @@ public class ResourceService {
                         .map(minioRepository::getObjectInformation).toList()
         );
 
+    }
+
+    @SneakyThrows
+    public List<ResourceResponseDto> upload(UploadResourceRequestDto uploadResourceRequestDto, UserDto userDto) {
+        PathComponents parent = PathComponentsBuilder.build(uploadResourceRequestDto.getPath(), userDto);
+
+        if (!parent.isResourceDirectory() || !minioRepository.isObjectExists(parent.getFull())) {
+            throw new ParentDirectoryNotFoundException(
+                    String.format("Parent directory path '%s' not found for UserID '%s'.", parent.getFull(), userDto.getId())
+            );
+        }
+
+        List<String> addedObjects = new ArrayList<>();
+        for (MultipartFile file : uploadResourceRequestDto.getFiles()) {
+            String fullFilePath = parent.getFull() + file.getOriginalFilename();
+            if (minioRepository.isObjectExists(fullFilePath)) {
+                throw new ResourceAlreadyExistsException(
+                        String.format("Resource '%s' already exists.", fullFilePath)
+                );
+            }
+
+            PathComponents objectPathWithoutParentPath = PathComponentsBuilder.build(file.getOriginalFilename(), userDto);
+            List<String> directories = objectPathWithoutParentPath.getParentDirectoryNames();
+            for (String directory : directories) {
+                PathComponents directoryPath =  PathComponentsBuilder.build(parent.getWithoutRootDirectory() + directory, userDto);
+                if (!minioRepository.isObjectExists(directoryPath.getFull())) {
+                    minioRepository.createDirectory(directoryPath.getFull());
+                    log.info("Create empty directory '{}'.", directoryPath.getFull());
+                    addedObjects.add(directoryPath.getFull());
+                }
+            }
+
+            minioRepository.saveObject(fullFilePath, file.getBytes(), file.getSize());
+            addedObjects.add(fullFilePath);
+            log.info("File '{}' saved to storage.", fullFilePath);
+        }
+
+        return resourceMapper.toResponseDto(addedObjects.stream()
+                .map(minioRepository::getObjectInformation)
+                .toList());
     }
 
     private List<String> filterByQuery(String query, List<String> objectNames) {

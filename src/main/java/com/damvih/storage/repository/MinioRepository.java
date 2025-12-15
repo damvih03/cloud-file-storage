@@ -106,6 +106,10 @@ public class MinioRepository {
         }
     }
 
+    public void saveObject(String key, byte[] data, long size) {
+        putObject(key, new ByteArrayInputStream(data), size);
+    }
+
     private Optional<StatObjectResponse> getStatObject(String key) {
         try {
             return Optional.of(minioClient.statObject(StatObjectArgs.builder()
