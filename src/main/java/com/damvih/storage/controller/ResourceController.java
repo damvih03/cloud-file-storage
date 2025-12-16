@@ -3,7 +3,7 @@ package com.damvih.storage.controller;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.UploadResourceRequestDto;
-import com.damvih.storage.service.ResourceService;
+import com.damvih.storage.service.resource.ResourceService;
 import com.damvih.storage.util.validation.PathValidator;
 import com.damvih.storage.util.validation.QueryValidator;
 import lombok.RequiredArgsConstructor;
