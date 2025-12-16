@@ -28,7 +28,7 @@ public class ResourceMoveService {
     private final MinioRepository minioRepository;
     private final ResourceMapper resourceMapper;
 
-    public ResourceResponseDto move(String from, String to, UserDto userDto) {
+    public ResourceResponseDto execute(String from, String to, UserDto userDto) {
         PathComponents source = PathComponentsBuilder.build(from, userDto);
         PathComponents target = PathComponentsBuilder.build(to, userDto);
 

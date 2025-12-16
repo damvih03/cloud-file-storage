@@ -28,7 +28,7 @@ public class ResourceUploadService {
     private final MinioRepository minioRepository;
     private final ResourceMapper resourceMapper;
 
-    public List<ResourceResponseDto> put(UploadResourceRequestDto request, UserDto user) {
+    public List<ResourceResponseDto> execute(UploadResourceRequestDto request, UserDto user) {
         PathComponents parent = PathComponentsBuilder.build(request.getPath(), user);
 
         if (!parent.isResourceDirectory() || !minioRepository.isObjectExists(parent.getFull())) {

@@ -21,7 +21,7 @@ public class ResourceSearchService {
     private final MinioRepository minioRepository;
     private final ResourceMapper resourceMapper;
 
-    public List<ResourceResponseDto> find(String query, UserDto userDto) {
+    public List<ResourceResponseDto> execute(String query, UserDto userDto) {
         PathComponents root = PathComponentsBuilder.build("", userDto);
         List<String> objectNames = directoryService.getObjectNames(root, true)
                 .stream()

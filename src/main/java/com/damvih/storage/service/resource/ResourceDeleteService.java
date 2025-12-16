@@ -1,7 +1,6 @@
 package com.damvih.storage.service.resource;
 
 import com.damvih.authentication.dto.UserDto;
-import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.repository.MinioRepository;
 import com.damvih.storage.service.DirectoryService;
@@ -22,7 +21,7 @@ public class ResourceDeleteService {
     private final DirectoryService directoryService;
     private final MinioRepository minioRepository;
 
-    public void delete(String path, UserDto userDto) {
+    public void execute(String path, UserDto userDto) {
         PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
         String fullPath = pathComponents.getFull();
 

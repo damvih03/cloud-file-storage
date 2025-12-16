@@ -18,7 +18,7 @@ public class ResourceDownloadService {
     private final DirectoryService directoryService;
     private final MinioRepository minioRepository;
 
-    public byte[] download(String path, UserDto userDto) {
+    public byte[] execute(String path, UserDto userDto) {
         PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
         String fullPath = pathComponents.getFull();
 
