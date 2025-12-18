@@ -3,8 +3,7 @@ package com.damvih.storage.service;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.entity.MinioResponse;
-import com.damvih.storage.exception.DirectoryAlreadyExistsException;
-import com.damvih.storage.exception.ParentDirectoryNotFoundException;
+import com.damvih.storage.exception.ResourceAlreadyExistsException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
@@ -31,16 +30,14 @@ public class DirectoryService {
         String fullPath = pathComponents.getFull();
 
         if (minioRepository.isObjectExists(fullPath)) {
-            throw new DirectoryAlreadyExistsException(
-                    String.format("Directory with name '%s' already exists.", fullPath)
-            );
+            log.info("Resource '{}' already exists.", fullPath);
+            throw new ResourceAlreadyExistsException("Resource already exists.");
         }
 
         String fullParentDirectory = pathComponents.getFullParentDirectory();
         if (!minioRepository.isObjectExists(fullParentDirectory)) {
-            throw new ParentDirectoryNotFoundException(
-                    String.format("Parent directory path '%s' not found for UserID '%s'.", fullParentDirectory, userDto.getId())
-            );
+            log.info("Parent directory '{}' not found for UserID '{}'", fullParentDirectory, userDto.getId());
+            throw new ResourceNotFoundException("Parent directory not found.");
         }
 
         minioRepository.createDirectory(pathComponents.getFull());
@@ -53,9 +50,8 @@ public class DirectoryService {
         String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
-            throw new ResourceNotFoundException(
-                    String.format("Resource '%s' not found.", fullPath)
-            );
+            log.info("Directory '{}' not found.", fullPath);
+            throw new ResourceNotFoundException("Resource not found.");
         }
 
         return getObjectsInformation(pathComponents);

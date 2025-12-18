@@ -1,5 +1,8 @@
 package com.damvih.storage.controller;
 
+import com.damvih.storage.docs.DeletingResourceDocs;
+import com.damvih.storage.docs.DownloadResourceDocs;
+import com.damvih.storage.docs.GettingResourceDocs;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.UploadResourceRequestDto;
@@ -23,6 +26,7 @@ public class ResourceController {
 
     private final ResourceService resourceService;
 
+    @GettingResourceDocs
     @GetMapping
     public ResponseEntity<ResourceResponseDto> get(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -30,6 +34,7 @@ public class ResourceController {
         return new ResponseEntity<>(resourceResponseDto, HttpStatus.OK);
     }
 
+    @DeletingResourceDocs
     @DeleteMapping
     public ResponseEntity<Void> delete(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -37,6 +42,7 @@ public class ResourceController {
         return ResponseEntity.noContent().build();
     }
 
+    @DownloadResourceDocs
     @GetMapping("/download")
     public ResponseEntity<byte[]> download(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);

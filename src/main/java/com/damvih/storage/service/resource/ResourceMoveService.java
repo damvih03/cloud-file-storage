@@ -3,10 +3,7 @@ package com.damvih.storage.service.resource;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.entity.MinioResponse;
-import com.damvih.storage.exception.ParentDirectoryNotFoundException;
-import com.damvih.storage.exception.ResourceNotFoundException;
-import com.damvih.storage.exception.ResourceTypesNotMatchesException;
-import com.damvih.storage.exception.TargetResourceAlreadyExistsException;
+import com.damvih.storage.exception.*;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
 import com.damvih.storage.service.DirectoryService;
@@ -52,19 +49,17 @@ public class ResourceMoveService {
         }
 
         if (!minioRepository.isObjectExists(source.getFull())) {
-            throw new ResourceNotFoundException(
-                    String.format("Resource not found: %s.", source.getFull())
-            );
+            log.info("Resource '{}' not found.", source.getFull());
+            throw new ResourceNotFoundException("Source resource not found.");
         }
 
         if (minioRepository.isObjectExists(target.getFull())) {
-            throw new TargetResourceAlreadyExistsException("Target resource already exists.");
+            throw new ResourceAlreadyExistsException("Target resource already exists.");
         }
 
         if (!minioRepository.isObjectExists(target.getFullParentDirectory())) {
-            throw new ParentDirectoryNotFoundException(
-                    String.format("Target parent directory not found: %s.", target.getFullParentDirectory())
-            );
+            log.info("Target parent directory of resource '{}' not found.", target.getFullParentDirectory());
+            throw new ResourceNotFoundException("Target parent directory of resource not found");
         }
     }
 

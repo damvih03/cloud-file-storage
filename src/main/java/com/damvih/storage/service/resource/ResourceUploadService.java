@@ -3,8 +3,8 @@ package com.damvih.storage.service.resource;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.dto.UploadResourceRequestDto;
-import com.damvih.storage.exception.ParentDirectoryNotFoundException;
 import com.damvih.storage.exception.ResourceAlreadyExistsException;
+import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
 import com.damvih.storage.repository.MinioRepository;
 import com.damvih.storage.service.PathComponents;
@@ -32,9 +32,8 @@ public class ResourceUploadService {
         PathComponents parent = PathComponentsBuilder.build(request.getPath(), user);
 
         if (!parent.isResourceDirectory() || !minioRepository.isObjectExists(parent.getFull())) {
-            throw new ParentDirectoryNotFoundException(
-                    String.format("Parent directory path '%s' not found.", parent.getFull())
-            );
+            log.info("Parent directory '{}' not found.", parent.getFull());
+            throw new ResourceNotFoundException("Parent directory not found.");
         }
 
         List<String> addedObjects = Arrays.stream(request.getFiles())
@@ -52,9 +51,8 @@ public class ResourceUploadService {
         String fullFilePath = parent.getFull() + file.getOriginalFilename();
 
         if (minioRepository.isObjectExists(fullFilePath)) {
-            throw new ResourceAlreadyExistsException(
-                    String.format("Resource '%s' already exists.", fullFilePath)
-            );
+            log.info("Resource '{}' already exists.", fullFilePath);
+            throw new ResourceAlreadyExistsException("Resource already exists.");
         }
 
         List<String> addedObjects = new ArrayList<>(

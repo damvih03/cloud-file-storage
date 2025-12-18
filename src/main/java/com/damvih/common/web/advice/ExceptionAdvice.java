@@ -62,24 +62,8 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception) {
-        log.info(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDto("Resource not found."));
-    }
-
-    @ExceptionHandler(ParentDirectoryNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleParentDirectoryNotFoundException(ParentDirectoryNotFoundException exception) {
-        log.info(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDto("Parent directory not found."));
-    }
-
-    @ExceptionHandler(DirectoryAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDto> handleDirectoryAlreadyExistsException(DirectoryAlreadyExistsException exception) {
-        log.info(exception.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponseDto("Directory already exists."));
+                .body(new ErrorResponseDto(exception.getMessage()));
     }
 
     @ExceptionHandler(ResourceTypesNotMatchesException.class)
@@ -90,12 +74,12 @@ public class ExceptionAdvice {
                 .body(new ErrorResponseDto("Resource types are not match."));
     }
 
-    @ExceptionHandler(TargetResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDto> handleTargetResourceAlreadyExistsException(TargetResourceAlreadyExistsException exception) {
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleTargetResourceAlreadyExistsException(ResourceAlreadyExistsException exception) {
         log.info(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponseDto("Target resource already exists."));
+                .body(new ErrorResponseDto(exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

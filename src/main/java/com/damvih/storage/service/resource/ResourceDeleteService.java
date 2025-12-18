@@ -26,9 +26,8 @@ public class ResourceDeleteService {
         String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
-            throw new ResourceNotFoundException(
-                    String.format("Resource not found: %s.", fullPath)
-            );
+            log.info("Resource '{}' not found for deleting.", fullPath);
+            throw new ResourceNotFoundException("Resource not found.");
         }
 
         List<String> objectNames = new ArrayList<>(List.of(fullPath));

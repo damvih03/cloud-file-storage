@@ -23,9 +23,8 @@ public class ResourceDownloadService {
         String fullPath = pathComponents.getFull();
 
         if (!minioRepository.isObjectExists(fullPath)) {
-            throw new ResourceNotFoundException(
-                    String.format("Resource not found: %s.", fullPath)
-            );
+            log.info("Resource '{}' not found.", fullPath);
+            throw new ResourceNotFoundException("Resource not found.");
         }
 
         if (pathComponents.isResourceDirectory()) {
