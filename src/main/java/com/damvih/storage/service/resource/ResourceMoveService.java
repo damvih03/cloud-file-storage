@@ -50,7 +50,7 @@ public class ResourceMoveService {
 
         if (!minioRepository.isObjectExists(source.getFull())) {
             log.info("Resource '{}' not found.", source.getFull());
-            throw new ResourceNotFoundException("Source resource not found.");
+            throw new ResourceNotFoundException("Resource not found.");
         }
 
         if (minioRepository.isObjectExists(target.getFull())) {
