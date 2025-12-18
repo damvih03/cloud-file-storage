@@ -2,7 +2,7 @@ package com.damvih.storage.listener;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.authentication.event.UserCreatedEvent;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class UserCreatedListener {
 
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
 
     @EventListener
     @Async
@@ -24,7 +24,7 @@ public class UserCreatedListener {
         UserDto userDto = userCreatedEvent.getUserDto();
         PathComponents pathComponents = PathComponentsBuilder.build("", userDto);
         try {
-            minioRepository.createDirectory(pathComponents.getRootDirectory());
+            storageRepository.createDirectory(pathComponents.getRootDirectory());
             log.info("Root directory created for UserID: {}.", userDto.getId());
         } catch (Exception exception) {
             log.error("Failed to create user directory for userId: {}.", userDto.getId(), exception);

@@ -3,7 +3,7 @@ package com.damvih.storage.service.resource;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.mapper.ResourceMapper;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.service.DirectoryService;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ResourceSearchService {
 
     private final DirectoryService directoryService;
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
     private final ResourceMapper resourceMapper;
 
     public List<ResourceResponseDto> execute(String query, UserDto userDto) {
@@ -31,7 +31,7 @@ public class ResourceSearchService {
 
         return resourceMapper.toResponseDto(
                 filteredObjectNames.stream()
-                        .map(minioRepository::getObjectInformation).toList()
+                        .map(storageRepository::getObjectInformation).toList()
         );
     }
 

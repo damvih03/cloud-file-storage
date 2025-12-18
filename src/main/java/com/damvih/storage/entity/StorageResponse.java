@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MinioResponse {
+public class StorageResponse {
 
     private String fullPath;
     private Long size;

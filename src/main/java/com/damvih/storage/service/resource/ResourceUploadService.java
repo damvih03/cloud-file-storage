@@ -6,7 +6,7 @@ import com.damvih.storage.dto.UploadResourceRequestDto;
 import com.damvih.storage.exception.ResourceAlreadyExistsException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ import java.util.List;
 @Slf4j
 public class ResourceUploadService {
 
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
     private final ResourceMapper resourceMapper;
 
     public List<ResourceResponseDto> execute(UploadResourceRequestDto request, UserDto user) {
         PathComponents parent = PathComponentsBuilder.build(request.getPath(), user);
 
-        if (!parent.isResourceDirectory() || !minioRepository.isObjectExists(parent.getFull())) {
+        if (!parent.isResourceDirectory() || !storageRepository.isObjectExists(parent.getFull())) {
             log.info("Parent directory '{}' not found.", parent.getFull());
             throw new ResourceNotFoundException("Parent directory not found.");
         }
@@ -41,7 +41,7 @@ public class ResourceUploadService {
                 .toList();
 
         return addedObjects.stream()
-                .map(minioRepository::getObjectInformation)
+                .map(storageRepository::getObjectInformation)
                 .map(resourceMapper::toResponseDto)
                 .toList();
     }
@@ -50,7 +50,7 @@ public class ResourceUploadService {
     private List<String> uploadFile(MultipartFile file, PathComponents parent, UserDto user) {
         String fullFilePath = parent.getFull() + file.getOriginalFilename();
 
-        if (minioRepository.isObjectExists(fullFilePath)) {
+        if (storageRepository.isObjectExists(fullFilePath)) {
             log.info("Resource '{}' already exists.", fullFilePath);
             throw new ResourceAlreadyExistsException("Resource already exists.");
         }
@@ -62,7 +62,7 @@ public class ResourceUploadService {
                         user)
         );
 
-        minioRepository.saveObject(fullFilePath, file.getInputStream(), file.getSize());
+        storageRepository.saveObject(fullFilePath, file.getInputStream(), file.getSize());
         log.info("File '{}' saved to storage.", fullFilePath);
         addedObjects.add(fullFilePath);
 
@@ -78,8 +78,8 @@ public class ResourceUploadService {
                     parent.getWithoutRootDirectory() + directoryName,
                     userDto);
 
-            if (!minioRepository.isObjectExists(fullDirectoryPath.getFull())) {
-                minioRepository.createDirectory(fullDirectoryPath.getFull());
+            if (!storageRepository.isObjectExists(fullDirectoryPath.getFull())) {
+                storageRepository.createDirectory(fullDirectoryPath.getFull());
                 log.info("Create empty directory '{}'.", fullDirectoryPath.getFull());
                 missingDirectories.add(fullDirectoryPath.getFull());
             }

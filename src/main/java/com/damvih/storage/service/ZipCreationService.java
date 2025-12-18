@@ -1,6 +1,6 @@
 package com.damvih.storage.service;
 
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 public class ZipCreationService {
 
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
 
     public byte[] createZip(PathComponents pathComponents, List<String> objectNames) {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
@@ -37,7 +37,7 @@ public class ZipCreationService {
         ZipEntry zipEntry = new ZipEntry(relativePath);
         zipOutputStream.putNextEntry(zipEntry);
         if (!objectPathComponents.isResourceDirectory()) {
-            byte[] objectData = minioRepository.getObjectData(objectPathComponents.getFull());
+            byte[] objectData = storageRepository.getObjectData(objectPathComponents.getFull());
             zipOutputStream.write(objectData);
         }
         zipOutputStream.closeEntry();

@@ -1,8 +1,8 @@
 package com.damvih.storage.repository;
 
 import com.damvih.storage.config.MinioClientProperties;
-import com.damvih.storage.entity.MinioResponse;
-import com.damvih.storage.exception.MinioOperationException;
+import com.damvih.storage.entity.StorageResponse;
+import com.damvih.storage.exception.StorageOperationException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
@@ -22,17 +22,17 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MinioRepository {
+public class StorageRepository {
 
     private final MinioClient minioClient;
     private final MinioClientProperties minioClientProperties;
 
-    public MinioResponse getObjectInformation(String key) {
+    public StorageResponse getObjectInformation(String key) {
         StatObjectResponse statObjectResponse = getStatObject(key)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Resource '%s' not found.", key)
                 ));
-        return new MinioResponse(key, statObjectResponse.size());
+        return new StorageResponse(key, statObjectResponse.size());
     }
 
     public void removeObjects(List<String> objectNames) {
@@ -50,7 +50,7 @@ public class MinioRepository {
             }
 
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ public class MinioRepository {
             );
             return extractObjectNames(results);
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
@@ -85,11 +85,11 @@ public class MinioRepository {
 
             return stream.readAllBytes();
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
-    public MinioResponse copyObject(String oldKey, String newKey) {
+    public StorageResponse copyObject(String oldKey, String newKey) {
         try {
             minioClient.copyObject(CopyObjectArgs.builder()
                     .bucket(minioClientProperties.getBucketName())
@@ -102,7 +102,7 @@ public class MinioRepository {
 
             return getObjectInformation(newKey);
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
@@ -121,9 +121,9 @@ public class MinioRepository {
             if (code.equals("NoSuchKey")) {
                 return Optional.empty();
             }
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class MinioRepository {
                     .build()
             );
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 
@@ -148,7 +148,7 @@ public class MinioRepository {
             }
             return items;
         } catch (Exception exception) {
-            throw new MinioOperationException(exception.getMessage());
+            throw new StorageOperationException(exception.getMessage());
         }
     }
 

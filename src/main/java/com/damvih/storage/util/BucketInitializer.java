@@ -1,7 +1,7 @@
 package com.damvih.storage.util;
 
 import com.damvih.storage.config.MinioClientProperties;
-import com.damvih.storage.exception.MinioOperationException;
+import com.damvih.storage.exception.StorageOperationException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -32,7 +32,7 @@ public class BucketInitializer {
                 );
             }
         } catch (Exception exception) {
-            throw new MinioOperationException("Failed to create bucket with name: " + minioClientProperties.getBucketName() + ".");
+            throw new StorageOperationException("Failed to create bucket with name: " + minioClientProperties.getBucketName() + ".");
         }
     }
 

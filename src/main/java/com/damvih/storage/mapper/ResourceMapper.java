@@ -1,7 +1,7 @@
 package com.damvih.storage.mapper;
 
 import com.damvih.storage.dto.ResourceResponseDto;
-import com.damvih.storage.entity.MinioResponse;
+import com.damvih.storage.entity.StorageResponse;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
 import org.mapstruct.Mapper;
@@ -13,16 +13,16 @@ import static org.mapstruct.MappingConstants.*;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface ResourceMapper {
 
-    default ResourceResponseDto toResponseDto(MinioResponse minioResponse) {
-        PathComponents pathComponents = PathComponentsBuilder.buildByFullPath(minioResponse.getFullPath());
+    default ResourceResponseDto toResponseDto(StorageResponse storageResponse) {
+        PathComponents pathComponents = PathComponentsBuilder.buildByFullPath(storageResponse.getFullPath());
         return new ResourceResponseDto(
                 pathComponents.getParentDirectory().isEmpty() ? "/" : pathComponents.getParentDirectory(),
                 pathComponents.getResourceName(),
-                pathComponents.isResourceDirectory() ? null : minioResponse.getSize(),
+                pathComponents.isResourceDirectory() ? null : storageResponse.getSize(),
                 pathComponents.getResourceType()
         );
     }
 
-    List<ResourceResponseDto> toResponseDto(List<MinioResponse> minioResponses);
+    List<ResourceResponseDto> toResponseDto(List<StorageResponse> storageRespons);
 
 }

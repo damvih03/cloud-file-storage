@@ -2,11 +2,11 @@ package com.damvih.storage.service;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
-import com.damvih.storage.entity.MinioResponse;
+import com.damvih.storage.entity.StorageResponse;
 import com.damvih.storage.exception.ResourceAlreadyExistsException;
 import com.damvih.storage.exception.ResourceNotFoundException;
 import com.damvih.storage.mapper.ResourceMapper;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.util.PathComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.List;
 public class DirectoryService {
 
     private final ZipCreationService zipCreationService;
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
     private final ResourceMapper resourceMapper;
 
     public void create(String path, UserDto userDto) {
@@ -29,18 +29,18 @@ public class DirectoryService {
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
-        if (minioRepository.isObjectExists(fullPath)) {
+        if (storageRepository.isObjectExists(fullPath)) {
             log.info("Resource '{}' already exists.", fullPath);
             throw new ResourceAlreadyExistsException("Resource already exists.");
         }
 
         String fullParentDirectory = pathComponents.getFullParentDirectory();
-        if (!minioRepository.isObjectExists(fullParentDirectory)) {
+        if (!storageRepository.isObjectExists(fullParentDirectory)) {
             log.info("Parent directory '{}' not found for UserID '{}'", fullParentDirectory, userDto.getId());
             throw new ResourceNotFoundException("Parent directory not found.");
         }
 
-        minioRepository.createDirectory(pathComponents.getFull());
+        storageRepository.createDirectory(pathComponents.getFull());
         log.info("UserID '{}' created directory '{}'.", userDto.getId(), pathComponents.getFull());
     }
 
@@ -49,7 +49,7 @@ public class DirectoryService {
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
 
-        if (!minioRepository.isObjectExists(fullPath)) {
+        if (!storageRepository.isObjectExists(fullPath)) {
             log.info("Directory '{}' not found.", fullPath);
             throw new ResourceNotFoundException("Resource not found.");
         }
@@ -58,7 +58,7 @@ public class DirectoryService {
     }
 
     public List<String> getObjectNames(PathComponents pathComponents, boolean recursive) {
-        List<String> objectNames = minioRepository.getObjectNames(pathComponents.getFull(), recursive);
+        List<String> objectNames = storageRepository.getObjectNames(pathComponents.getFull(), recursive);
         objectNames.remove(pathComponents.getFull());
         return objectNames;
     }
@@ -72,7 +72,7 @@ public class DirectoryService {
 
         for (PathComponents oldObject : PathComponentsBuilder.buildByFullPaths(directoryObjectNames)) {
             PathComponents newObject = changeObjectParentDirectory(oldObject, newParent);
-            minioRepository.copyObject(oldObject.getFull(), newObject.getFull());
+            storageRepository.copyObject(oldObject.getFull(), newObject.getFull());
             log.info("Resource inside directory '{}' changed successfully to '{}'.", oldObject.getFull(), newObject.getFull());
         }
 
@@ -98,12 +98,12 @@ public class DirectoryService {
     private List<ResourceResponseDto> getObjectsInformation(PathComponents pathComponents) {
         List<String> objectNames = getObjectNames(pathComponents, false);
 
-        List<MinioResponse> minioResponses = new ArrayList<>();
+        List<StorageResponse> storageRespons = new ArrayList<>();
         for (String objectName : objectNames) {
-            minioResponses.add(minioRepository.getObjectInformation(objectName));
+            storageRespons.add(storageRepository.getObjectInformation(objectName));
         }
 
-        return resourceMapper.toResponseDto(minioResponses);
+        return resourceMapper.toResponseDto(storageRespons);
     }
 
 }

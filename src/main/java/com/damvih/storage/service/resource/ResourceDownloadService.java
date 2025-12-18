@@ -2,7 +2,7 @@ package com.damvih.storage.service.resource;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.exception.ResourceNotFoundException;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.service.DirectoryService;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 public class ResourceDownloadService {
 
     private final DirectoryService directoryService;
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
 
     public byte[] execute(String path, UserDto userDto) {
         PathComponents pathComponents = PathComponentsBuilder.build(path, userDto);
         String fullPath = pathComponents.getFull();
 
-        if (!minioRepository.isObjectExists(fullPath)) {
+        if (!storageRepository.isObjectExists(fullPath)) {
             log.info("Resource '{}' not found.", fullPath);
             throw new ResourceNotFoundException("Resource not found.");
         }
@@ -31,7 +31,7 @@ public class ResourceDownloadService {
             return directoryService.download(pathComponents);
         }
 
-        return minioRepository.getObjectData(fullPath);
+        return storageRepository.getObjectData(fullPath);
     }
 
 }

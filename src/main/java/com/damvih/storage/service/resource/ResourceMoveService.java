@@ -2,10 +2,10 @@ package com.damvih.storage.service.resource;
 
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.ResourceResponseDto;
-import com.damvih.storage.entity.MinioResponse;
+import com.damvih.storage.entity.StorageResponse;
 import com.damvih.storage.exception.*;
 import com.damvih.storage.mapper.ResourceMapper;
-import com.damvih.storage.repository.MinioRepository;
+import com.damvih.storage.repository.StorageRepository;
 import com.damvih.storage.service.DirectoryService;
 import com.damvih.storage.service.PathComponents;
 import com.damvih.storage.util.PathComponentsBuilder;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ResourceMoveService {
 
     private final DirectoryService directoryService;
-    private final MinioRepository minioRepository;
+    private final StorageRepository storageRepository;
     private final ResourceMapper resourceMapper;
 
     public ResourceResponseDto execute(String from, String to, UserDto userDto) {
@@ -36,11 +36,11 @@ public class ResourceMoveService {
             objectNames.addAll(directoryService.copyObjects(source, target));
         }
 
-        MinioResponse minioResponse = minioRepository.copyObject(source.getFull(), target.getFull());
-        minioRepository.removeObjects(objectNames);
+        StorageResponse storageResponse = storageRepository.copyObject(source.getFull(), target.getFull());
+        storageRepository.removeObjects(objectNames);
         log.info("Resource '{}' changed successfully to '{}' by UserID '{}'.", source.getFull(), target.getFull(), userDto.getId());
 
-        return resourceMapper.toResponseDto(minioResponse);
+        return resourceMapper.toResponseDto(storageResponse);
     }
 
     private void validateMove(PathComponents source, PathComponents target) {
@@ -48,16 +48,16 @@ public class ResourceMoveService {
             throw new ResourceTypesNotMatchesException("Source and target resource types do not match.");
         }
 
-        if (!minioRepository.isObjectExists(source.getFull())) {
+        if (!storageRepository.isObjectExists(source.getFull())) {
             log.info("Resource '{}' not found.", source.getFull());
             throw new ResourceNotFoundException("Resource not found.");
         }
 
-        if (minioRepository.isObjectExists(target.getFull())) {
+        if (storageRepository.isObjectExists(target.getFull())) {
             throw new ResourceAlreadyExistsException("Target resource already exists.");
         }
 
-        if (!minioRepository.isObjectExists(target.getFullParentDirectory())) {
+        if (!storageRepository.isObjectExists(target.getFullParentDirectory())) {
             log.info("Target parent directory of resource '{}' not found.", target.getFullParentDirectory());
             throw new ResourceNotFoundException("Target parent directory of resource not found");
         }
