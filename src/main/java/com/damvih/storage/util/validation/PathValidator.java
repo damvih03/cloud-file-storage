@@ -2,6 +2,7 @@ package com.damvih.storage.util.validation;
 
 import com.damvih.storage.exception.InvalidPathException;
 import lombok.experimental.UtilityClass;
+import org.springframework.web.multipart.MultipartFile;
 
 @UtilityClass
 public class PathValidator {
@@ -21,6 +22,12 @@ public class PathValidator {
 
         if (path.contains("//")) {
             throw new InvalidPathException("Path can not contain multiple slashes.");
+        }
+    }
+
+    public void validateFileNames(MultipartFile[] files) {
+        for (MultipartFile file : files) {
+            validate(file.getOriginalFilename());
         }
     }
 

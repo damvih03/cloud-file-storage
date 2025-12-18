@@ -71,6 +71,7 @@ public class ResourceController {
                                                             @RequestParam(name = "object") MultipartFile[] files,
                                                             @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
+        PathValidator.validateFileNames(files);
         return new ResponseEntity<>(resourceService.upload(new UploadResourceRequestDto(path, files), userDto), HttpStatus.CREATED);
     }
 
