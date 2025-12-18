@@ -7,6 +7,9 @@ import com.damvih.authentication.dto.UserResponseDto;
 import com.damvih.authentication.mapper.UserMapper;
 import com.damvih.authentication.service.AuthenticationService;
 import com.damvih.authentication.service.AuthenticationStateHandlerService;
+import com.damvih.authentication.docs.SignInDocs;
+import com.damvih.authentication.docs.SignOutDocs;
+import com.damvih.authentication.docs.SignUpDocs;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -27,6 +30,7 @@ public class AuthenticationController {
     private final AuthenticationStateHandlerService authenticationStateHandlerService;
     private final UserMapper userMapper;
 
+    @SignUpDocs
     @PostMapping("/sign-up")
     public ResponseEntity<UserResponseDto> signUp(@RequestBody @Valid UserRegistrationRequestDto userRegistrationRequestDto, HttpServletRequest request, HttpServletResponse response) {
         UserDto userDto = authenticationStateHandlerService.onAuthenticated(
@@ -36,6 +40,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(userMapper.toResponseDto(userDto), HttpStatus.CREATED);
     }
 
+    @SignInDocs
     @PostMapping("/sign-in")
     public ResponseEntity<UserResponseDto> signIn(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request, HttpServletResponse response) {
         UserDto userDto = authenticationStateHandlerService.onAuthenticated(
@@ -46,6 +51,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(userMapper.toResponseDto(userDto), HttpStatus.OK);
     }
 
+    @SignOutDocs
     @PostMapping("/sign-out")
     public ResponseEntity<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();

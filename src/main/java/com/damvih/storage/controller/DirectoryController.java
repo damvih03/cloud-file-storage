@@ -1,6 +1,8 @@
 package com.damvih.storage.controller;
 
 import com.damvih.authentication.dto.UserDto;
+import com.damvih.storage.docs.CreationDirectoryDocs;
+import com.damvih.storage.docs.GettingDirectoryDocs;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.storage.service.DirectoryService;
 import com.damvih.storage.util.validation.PathValidator;
@@ -19,6 +21,7 @@ public class DirectoryController {
 
     private final DirectoryService directoryService;
 
+    @CreationDirectoryDocs
     @PostMapping
     public ResponseEntity<Void> create(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -26,6 +29,7 @@ public class DirectoryController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @GettingDirectoryDocs
     @GetMapping
     public ResponseEntity<List<ResourceResponseDto>> get(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);

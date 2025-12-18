@@ -1,5 +1,6 @@
 package com.damvih.storage.controller;
 
+import com.damvih.storage.docs.*;
 import com.damvih.storage.dto.ResourceResponseDto;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.storage.dto.UploadResourceRequestDto;
@@ -23,7 +24,7 @@ public class ResourceController {
 
     private final ResourceService resourceService;
 
-
+    @GettingResourceDocs
     @GetMapping
     public ResponseEntity<ResourceResponseDto> get(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -31,6 +32,7 @@ public class ResourceController {
         return new ResponseEntity<>(resourceResponseDto, HttpStatus.OK);
     }
 
+    @DeletingResourceDocs
     @DeleteMapping
     public ResponseEntity<Void> delete(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -38,7 +40,7 @@ public class ResourceController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @DownloadingResourceDocs
     @GetMapping("/download")
     public ResponseEntity<byte[]> download(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
@@ -49,7 +51,7 @@ public class ResourceController {
                 .body(data);
     }
 
-
+    @MovingResourceDocs
     @GetMapping("/move")
     public ResponseEntity<ResourceResponseDto> move(@RequestParam(name = "from") String from,
                                                     @RequestParam(name = "to") String to,
@@ -60,12 +62,14 @@ public class ResourceController {
         return new ResponseEntity<>(resourceService.move(from, to, userDto), HttpStatus.OK);
     }
 
+    @SearchingResourceDocs
     @GetMapping("/search")
     public ResponseEntity<List<ResourceResponseDto>> search(@RequestParam(name = "query") String query, @AuthenticationPrincipal UserDto userDto) {
         QueryValidator.validate(query);
         return new ResponseEntity<>(resourceService.find(query, userDto), HttpStatus.OK);
     }
 
+    @UploadingResourceDocs
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<ResourceResponseDto>> upload(@RequestParam(name = "path") String path,
                                                             @RequestParam(name = "object") MultipartFile[] files,

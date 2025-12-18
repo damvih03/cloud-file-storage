@@ -1,5 +1,6 @@
 package com.damvih.authentication.controller;
 
+import com.damvih.authentication.docs.GettingUserDocs;
 import com.damvih.authentication.dto.UserDto;
 import com.damvih.authentication.dto.UserResponseDto;
 import com.damvih.authentication.mapper.UserMapper;
@@ -15,6 +16,7 @@ public class UserController {
 
     private final UserMapper userMapper;
 
+    @GettingUserDocs
     @GetMapping("/user/me")
     public ResponseEntity<UserResponseDto> get(@AuthenticationPrincipal UserDto userDto) {
         UserResponseDto userResponseDto = userMapper.toResponseDto(userDto);
