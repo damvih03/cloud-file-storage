@@ -5,6 +5,7 @@ import com.damvih.authentication.dto.UserRegistrationRequestDto;
 import com.damvih.authentication.exception.UserAlreadyExistsException;
 import com.damvih.authentication.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +52,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
+    @DisplayName("Should create user successfully")
     public void testCorrectCreatingUser() {
         UserRegistrationRequestDto  userRegistrationRequestDto = new UserRegistrationRequestDto(
                 "user1",
@@ -69,6 +71,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when username already exists")
     public void testCreatingExistingUser() {
         UserRegistrationRequestDto userRegistrationRequestDto = new UserRegistrationRequestDto(
                 "user2",
