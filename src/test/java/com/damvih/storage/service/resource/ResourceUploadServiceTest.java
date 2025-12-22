@@ -64,7 +64,7 @@ public class ResourceUploadServiceTest extends ResourceServiceTest {
     }
 
     @Test
-    @DisplayName("Should upload multiple resources with subdirectories successfuly")
+    @DisplayName("Should upload multiple resources with subdirectories successfully")
     @SneakyThrows
     public void testUploadingMultipleResources() {
         int filesAmount = 3;
