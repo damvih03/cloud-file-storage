@@ -23,7 +23,11 @@ public class PathValidator {
 
     public void validateFileNames(MultipartFile[] files) {
         for (MultipartFile file : files) {
-            validate(file.getOriginalFilename());
+            String fileName = file.getOriginalFilename();
+            if (fileName.isBlank()) {
+                throw new InvalidPathException("File name is empty.");
+            }
+            validate(fileName);
         }
     }
 
