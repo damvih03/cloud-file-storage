@@ -16,8 +16,8 @@ public interface ResourceMapper {
     default ResourceResponseDto toResponseDto(StorageResponse storageResponse) {
         PathComponents pathComponents = PathComponentsBuilder.buildByFullPath(storageResponse.getFullPath());
         return new ResourceResponseDto(
-                pathComponents.getParentDirectory().isEmpty() ? "/" : pathComponents.getParentDirectory(),
-                pathComponents.getResourceName(),
+                pathComponents.getParentDirectory(),
+                pathComponents.getResourceName() + (pathComponents.isResourceDirectory() ? "/" : ""),
                 pathComponents.isResourceDirectory() ? null : storageResponse.getSize(),
                 pathComponents.getResourceType()
         );
