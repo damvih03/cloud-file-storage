@@ -104,12 +104,12 @@ public class DirectoryService {
     private List<ResourceResponseDto> getObjectsInformation(PathComponents pathComponents) {
         List<String> objectNames = getObjectNames(pathComponents, false);
 
-        List<StorageResponse> storageRespons = new ArrayList<>();
+        List<StorageResponse> storageResponses = new ArrayList<>();
         for (String objectName : objectNames) {
-            storageRespons.add(storageRepository.getObjectInformation(objectName));
+            storageResponses.add(storageRepository.getObjectInformation(objectName));
         }
 
-        return resourceMapper.toResponseDto(storageRespons);
+        return resourceMapper.toResponseDto(storageResponses);
     }
 
 }

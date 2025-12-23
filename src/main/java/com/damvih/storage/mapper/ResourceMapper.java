@@ -23,6 +23,6 @@ public interface ResourceMapper {
         );
     }
 
-    List<ResourceResponseDto> toResponseDto(List<StorageResponse> storageRespons);
+    List<ResourceResponseDto> toResponseDto(List<StorageResponse> storageResponses);
 
 }
