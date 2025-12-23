@@ -36,7 +36,7 @@ public class ZipCreationService {
         String relativePath = buildRelativePath(relativePathComponents, objectPathComponents);
         ZipEntry zipEntry = new ZipEntry(relativePath);
         zipOutputStream.putNextEntry(zipEntry);
-        if (!objectPathComponents.isResourceDirectory()) {
+        if (!objectPathComponents.isDirectory()) {
             byte[] objectData = storageRepository.getObjectData(objectPathComponents.getFull());
             zipOutputStream.write(objectData);
         }

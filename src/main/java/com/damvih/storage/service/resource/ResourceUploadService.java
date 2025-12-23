@@ -31,7 +31,7 @@ public class ResourceUploadService {
     public List<ResourceResponseDto> execute(UploadResourceRequestDto request, UserDto user) {
         PathComponents parent = PathComponentsBuilder.build(request.getPath(), user);
 
-        if (!parent.isResourceDirectory() || !storageRepository.isObjectExists(parent.getFull())) {
+        if (!parent.isDirectory() || !storageRepository.isObjectExists(parent.getFull())) {
             log.info("Parent directory '{}' not found.", parent.getFull());
             throw new ResourceNotFoundException("Parent directory not found.");
         }

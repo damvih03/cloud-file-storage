@@ -22,7 +22,7 @@ public class PathComponents {
             return fullPath;
         }
 
-        if (isResourceDirectory()) {
+        if (isDirectory()) {
             return fullPath + "/";
         }
 
@@ -56,10 +56,10 @@ public class PathComponents {
             return pathWithoutRootDirectory;
         }
 
-        return isResourceDirectory() ? pathWithoutRootDirectory + "/" : pathWithoutRootDirectory;
+        return isDirectory() ? pathWithoutRootDirectory + "/" : pathWithoutRootDirectory;
     }
 
-    public boolean isResourceDirectory() {
+    public boolean isDirectory() {
         return resourceType == ResourceType.DIRECTORY;
     }
 

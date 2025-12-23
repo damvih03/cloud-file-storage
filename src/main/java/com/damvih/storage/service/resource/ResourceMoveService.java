@@ -32,7 +32,7 @@ public class ResourceMoveService {
         validateMove(source, target);
 
         List<String> objectNames = new ArrayList<>(List.of(source.getFull()));
-        if (source.isResourceDirectory()) {
+        if (source.isDirectory()) {
             objectNames.addAll(directoryService.copyObjects(source, target));
         }
 

@@ -32,7 +32,7 @@ public class ResourceDeleteService {
 
         List<String> objectNames = new ArrayList<>(List.of(fullPath));
 
-        if (pathComponents.isResourceDirectory()) {
+        if (pathComponents.isDirectory()) {
             objectNames.addAll(directoryService.getObjectNames(pathComponents, true));
         }
 

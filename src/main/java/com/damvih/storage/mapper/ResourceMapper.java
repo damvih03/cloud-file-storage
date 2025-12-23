@@ -17,8 +17,8 @@ public interface ResourceMapper {
         PathComponents pathComponents = PathComponentsBuilder.buildByFullPath(storageResponse.getFullPath());
         return new ResourceResponseDto(
                 pathComponents.getParentDirectory(),
-                pathComponents.getResourceName() + (pathComponents.isResourceDirectory() ? "/" : ""),
-                pathComponents.isResourceDirectory() ? null : storageResponse.getSize(),
+                pathComponents.getResourceName() + (pathComponents.isDirectory() ? "/" : ""),
+                pathComponents.isDirectory() ? null : storageResponse.getSize(),
                 pathComponents.getResourceType()
         );
     }

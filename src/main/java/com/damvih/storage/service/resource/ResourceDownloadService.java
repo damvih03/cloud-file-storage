@@ -27,7 +27,7 @@ public class ResourceDownloadService {
             throw new ResourceNotFoundException("Resource not found.");
         }
 
-        if (pathComponents.isResourceDirectory()) {
+        if (pathComponents.isDirectory()) {
             return directoryService.download(pathComponents);
         }
 
