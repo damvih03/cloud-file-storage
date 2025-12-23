@@ -8,10 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PathValidator {
 
     public void validate(String path) {
-        if (path.isBlank()) {
-            throw new InvalidPathException("Path is blank.");
-        }
-
         if (path.matches(".*[|<>*?\\\\].*")) {
             throw new InvalidPathException("Path contains illegal characters.");
         }
