@@ -24,7 +24,7 @@ public class DirectoryService {
     private final StorageRepository storageRepository;
     private final ResourceMapper resourceMapper;
 
-    public void create(String path, UserDto userDto) {
+    public ResourceResponseDto create(String path, UserDto userDto) {
         String normalizedPath = normalizeName(path);
         PathComponents pathComponents = PathComponentsBuilder.build(normalizedPath, userDto);
         String fullPath = pathComponents.getFull();
@@ -42,6 +42,10 @@ public class DirectoryService {
 
         storageRepository.createDirectory(pathComponents.getFull());
         log.info("UserID '{}' created directory '{}'.", userDto.getId(), pathComponents.getFull());
+
+        return resourceMapper.toResponseDto(
+                storageRepository.getObjectInformation(fullPath)
+        );
     }
 
     public List<ResourceResponseDto> get(String path, UserDto userDto) {

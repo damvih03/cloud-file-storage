@@ -23,10 +23,10 @@ public class DirectoryController {
 
     @CreationDirectoryDocs
     @PostMapping
-    public ResponseEntity<Void> create(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<ResourceResponseDto> create(@RequestParam(name = "path") String path, @AuthenticationPrincipal UserDto userDto) {
         PathValidator.validate(path);
-        directoryService.create(path, userDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(directoryService.create(path, userDto));
     }
 
     @GettingDirectoryDocs
