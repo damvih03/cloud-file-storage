@@ -71,7 +71,7 @@ public class DirectoryService {
         List<String> directoryObjectNames = getObjectNames(oldParent, true);
 
         for (PathComponents oldObject : PathComponentsBuilder.buildByFullPaths(directoryObjectNames)) {
-            PathComponents newObject = changeObjectParentDirectory(oldObject, newParent);
+            PathComponents newObject = changeObjectParentDirectory(oldObject, oldParent, newParent);
             storageRepository.copyObject(oldObject.getFull(), newObject.getFull());
             log.info("Resource inside directory '{}' changed successfully to '{}'.", oldObject.getFull(), newObject.getFull());
         }
@@ -79,10 +79,16 @@ public class DirectoryService {
         return directoryObjectNames;
     }
 
-    private PathComponents changeObjectParentDirectory(PathComponents oldObjectPathComponents, PathComponents target) {
+    private PathComponents changeObjectParentDirectory(PathComponents oldObjectPathComponents, PathComponents source, PathComponents target) {
+        String sourceParent = source.getWithoutRootDirectory();
+        String targetParent = target.getWithoutRootDirectory();
+        String parentDirectory = oldObjectPathComponents.getParentDirectory();
+
+        String newParentDirectory = targetParent + parentDirectory.substring(sourceParent.length());
+
         return new PathComponents(
                 oldObjectPathComponents.getRootDirectory(),
-                target.getWithoutRootDirectory(),
+                newParentDirectory,
                 oldObjectPathComponents.getResourceName(),
                 oldObjectPathComponents.getResourceType()
         );
