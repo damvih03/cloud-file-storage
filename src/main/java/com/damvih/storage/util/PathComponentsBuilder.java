@@ -63,6 +63,9 @@ public class PathComponentsBuilder {
     }
 
     private ResourceType getResourceType(String path) {
+        if (path.isBlank()) {
+            return ResourceType.DIRECTORY;
+        }
         return path.endsWith("/") ? ResourceType.DIRECTORY : ResourceType.FILE;
     }
 
