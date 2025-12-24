@@ -11,6 +11,7 @@ import java.util.List;
 public class PathComponentsBuilder {
 
     public PathComponents build(String path, UserDto userDto) {
+        path = path.trim();
         return new PathComponents(
                 getRootDirectory(userDto),
                 extractParentDirectory(path),
