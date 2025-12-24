@@ -28,11 +28,12 @@ public class StorageRepository {
     private final MinioClientProperties minioClientProperties;
 
     public StorageResponse getObjectInformation(String key) {
-        StatObjectResponse statObjectResponse = getStatObject(key)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Resource '%s' not found.", key)
-                ));
-        return new StorageResponse(key, statObjectResponse.size());
+        Optional<StatObjectResponse> responseOptional = getStatObject(key);
+        if (responseOptional.isEmpty()) {
+            log.info("Resource '{}' not found.", key);
+            throw new ResourceNotFoundException("Resource not found.");
+        }
+        return new StorageResponse(key, responseOptional.get().size());
     }
 
     public void removeObjects(List<String> objectNames) {
