@@ -47,7 +47,7 @@ public class UserCreatedListenerTest extends StorageTestcontainer {
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(new User());
         Mockito.when(userMapper.toDto(Mockito.any(User.class))).thenReturn(userDto);
 
-        userService.create(new UserRegistrationRequestDto());
+        userService.create(new UserRegistrationRequestDto(userDto.username(), "randomPassword"));
 
         Assertions.assertEquals(path.getRootDirectory(), path.getFull());
         Assertions.assertTrue(storageRepository.isObjectExists(path.getRootDirectory()));

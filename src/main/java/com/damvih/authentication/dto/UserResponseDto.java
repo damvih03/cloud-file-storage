@@ -1,16 +1,8 @@
 package com.damvih.authentication.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public record UserResponseDto(
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserResponseDto {
+        String username
 
-    private String username;
-
+) {
 }

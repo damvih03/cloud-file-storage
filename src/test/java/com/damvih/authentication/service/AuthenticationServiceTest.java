@@ -67,7 +67,7 @@ public class AuthenticationServiceTest {
         Assertions.assertInstanceOf(UserDto.class, authentication.getPrincipal());
 
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        Assertions.assertEquals(userRegistrationRequestDto.getUsername(), userDto.getUsername());
+        Assertions.assertEquals(userRegistrationRequestDto.username(), userDto.username());
     }
 
     @Test

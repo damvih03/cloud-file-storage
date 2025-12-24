@@ -37,7 +37,7 @@ public class ResourceDeleteService {
         }
 
         storageRepository.removeObjects(objectNames);
-        log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.getId());
+        log.info("Resource '{}' deleted successfully by UserID '{}'.", fullPath, userDto.id());
     }
 
 }

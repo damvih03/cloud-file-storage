@@ -45,7 +45,7 @@ public class ResourceDeleteServiceTest extends ResourceServiceTest {
         Assertions.assertFalse(storageRepository.isObjectExists(directory.getFull()),
                 "Directory still exists");
 
-        for (MultipartFile file : uploadResourceRequestDto.getFiles()) {
+        for (MultipartFile file : uploadResourceRequestDto.files()) {
             Assertions.assertFalse(storageRepository.isObjectExists(
                     directory.getFull() + file.getOriginalFilename()),
                     "File inside deleted directory still exists");
@@ -61,7 +61,7 @@ public class ResourceDeleteServiceTest extends ResourceServiceTest {
         );
         resourceUploadService.execute(uploadResourceRequestDto, USER_DTO);
 
-        MultipartFile file = uploadResourceRequestDto.getFiles()[0];
+        MultipartFile file = uploadResourceRequestDto.files()[0];
         PathComponents filePath = PathComponentsBuilder.build(file.getOriginalFilename(), USER_DTO);
 
         Assertions.assertTrue(storageRepository.isObjectExists(filePath.getFull()));

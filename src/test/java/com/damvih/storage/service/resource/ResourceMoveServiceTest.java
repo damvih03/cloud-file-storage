@@ -53,7 +53,7 @@ public class ResourceMoveServiceTest extends ResourceServiceTest {
         Assertions.assertTrue(storageRepository.isObjectExists(newDirectory.getFull()),
                 "Directory with new name does not exist");
 
-        for (MultipartFile file : uploadResourceRequestDto.getFiles()) {
+        for (MultipartFile file : uploadResourceRequestDto.files()) {
             PathComponents newFilePath = PathComponentsBuilder.build(
                     newDirectory.getWithoutRootDirectory() + file.getOriginalFilename(),
                     USER_DTO);
@@ -77,7 +77,7 @@ public class ResourceMoveServiceTest extends ResourceServiceTest {
         );
         resourceUploadService.execute(uploadResourceRequestDto, USER_DTO);
 
-        MultipartFile file = uploadResourceRequestDto.getFiles()[0];
+        MultipartFile file = uploadResourceRequestDto.files()[0];
         PathComponents newFilePath = PathComponentsBuilder.build(
                 UUID.randomUUID().toString(),
                 USER_DTO);

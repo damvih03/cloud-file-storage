@@ -47,7 +47,7 @@ public class AuthenticationController {
                 () -> authenticationService.signIn(userLoginRequestDto),
                 request, response
         );
-        log.info("UserID '{}' entered.", userDto.getId());
+        log.info("UserID '{}' entered.", userDto.id());
         return new ResponseEntity<>(userMapper.toResponseDto(userDto), HttpStatus.OK);
     }
 

@@ -26,17 +26,17 @@ public class UserService {
 
     public UserDto create(UserRegistrationRequestDto userRegistrationRequestDto) {
         User user = new User();
-        user.setUsername(userRegistrationRequestDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userRegistrationRequestDto.getPassword()));
+        user.setUsername(userRegistrationRequestDto.username());
+        user.setPassword(passwordEncoder.encode(userRegistrationRequestDto.password()));
 
         try {
             UserDto userDto = userMapper.toDto(userRepository.save(user));
-            log.info("UserID '{}' with username '{}' created.", userDto.getId(), userDto.getUsername());
+            log.info("UserID '{}' with username '{}' created.", userDto.id(), userDto.username());
             applicationEventPublisher.publishEvent(new UserCreatedEvent(this, userDto));
             return userDto;
         } catch (DataIntegrityViolationException exception) {
             throw new UserAlreadyExistsException(
-                    String.format("Attempt to create user with an existing username %s.", userRegistrationRequestDto.getUsername())
+                    String.format("Attempt to create user with an existing username %s.", userRegistrationRequestDto.username())
             );
         }
     }

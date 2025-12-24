@@ -1,22 +1,16 @@
 package com.damvih.storage.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ResourceResponseDto {
+public record ResourceResponseDto(
 
-    private String path;
+        String path,
 
-    private String name;
+        String name,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long size;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        Long size,
 
-    private ResourceType type;
-
+        ResourceType type
+) {
 }

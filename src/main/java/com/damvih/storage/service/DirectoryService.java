@@ -36,12 +36,12 @@ public class DirectoryService {
 
         String fullParentDirectory = pathComponents.getFullParentDirectory();
         if (!storageRepository.isObjectExists(fullParentDirectory)) {
-            log.info("Parent directory '{}' not found for UserID '{}'", fullParentDirectory, userDto.getId());
+            log.info("Parent directory '{}' not found for UserID '{}'", fullParentDirectory, userDto.id());
             throw new ResourceNotFoundException("Parent directory not found.");
         }
 
         storageRepository.createDirectory(pathComponents.getFull());
-        log.info("UserID '{}' created directory '{}'.", userDto.getId(), pathComponents.getFull());
+        log.info("UserID '{}' created directory '{}'.", userDto.id(), pathComponents.getFull());
 
         return resourceMapper.toResponseDto(
                 storageRepository.getObjectInformation(fullPath)

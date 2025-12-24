@@ -24,7 +24,7 @@ public class ResourceInformationService {
         String fullPath = pathComponents.getFull();
 
         StorageResponse storageResponse = storageRepository.getObjectInformation(fullPath);
-        log.info("UserID '{}' received metadata for resource '{}'.", userDto.getId(), fullPath);
+        log.info("UserID '{}' received metadata for resource '{}'.", userDto.id(), fullPath);
         return resourceMapper.toResponseDto(storageResponse);
     }
 

@@ -36,7 +36,7 @@ public class PathComponentsBuilder {
     }
 
     private String getRootDirectory(UserDto userDto) {
-        return String.format("user-%s-files/", userDto.getId());
+        return String.format("user-%s-files/", userDto.id());
     }
 
     private String extractParentDirectory(String path) {

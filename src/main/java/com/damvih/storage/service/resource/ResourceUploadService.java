@@ -29,14 +29,14 @@ public class ResourceUploadService {
     private final ResourceMapper resourceMapper;
 
     public List<ResourceResponseDto> execute(UploadResourceRequestDto request, UserDto user) {
-        PathComponents parent = PathComponentsBuilder.build(request.getPath(), user);
+        PathComponents parent = PathComponentsBuilder.build(request.path(), user);
 
         if (!parent.isDirectory() || !storageRepository.isObjectExists(parent.getFull())) {
             log.info("Parent directory '{}' not found.", parent.getFull());
             throw new ResourceNotFoundException("Parent directory not found.");
         }
 
-        List<String> addedObjects = Arrays.stream(request.getFiles())
+        List<String> addedObjects = Arrays.stream(request.files())
                 .flatMap(file -> uploadFile(file, parent, user).stream())
                 .toList();
 

@@ -1,16 +1,8 @@
 package com.damvih.common.web.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public record ErrorResponseDto(
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponseDto {
+        String message
 
-    private String message;
-
+) {
 }

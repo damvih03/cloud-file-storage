@@ -25,9 +25,9 @@ public class UserCreatedListener {
         PathComponents pathComponents = PathComponentsBuilder.build("", userDto);
         try {
             storageRepository.createDirectory(pathComponents.getRootDirectory());
-            log.info("Root directory created for UserID: {}.", userDto.getId());
+            log.info("Root directory created for UserID: {}.", userDto.id());
         } catch (Exception exception) {
-            log.error("Failed to create user directory for userId: {}.", userDto.getId(), exception);
+            log.error("Failed to create user directory for userId: {}.", userDto.id(), exception);
         }
 
     }

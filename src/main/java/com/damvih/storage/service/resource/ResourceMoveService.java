@@ -38,7 +38,7 @@ public class ResourceMoveService {
 
         StorageResponse storageResponse = storageRepository.copyObject(source.getFull(), target.getFull());
         storageRepository.removeObjects(objectNames);
-        log.info("Resource '{}' changed successfully to '{}' by UserID '{}'.", source.getFull(), target.getFull(), userDto.getId());
+        log.info("Resource '{}' changed successfully to '{}' by UserID '{}'.", source.getFull(), target.getFull(), userDto.id());
 
         return resourceMapper.toResponseDto(storageResponse);
     }
